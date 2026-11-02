@@ -8,6 +8,7 @@ import { Indexer } from "./indexer/indexer.js";
 import { FileStateStore } from "./indexer/store.js";
 import { createApp } from "./http/server.js";
 import { SorobanRpcSource } from "./rpc/soroban-rpc-source.js";
+import { ContractChainReader, SorobanSimulateCaller } from "./rpc/soroban-chain-reader.js";
 import type { Logger } from "./types/index.js";
 
 const env = (k: string, d?: string): string => {
@@ -40,6 +41,9 @@ const source = new SorobanRpcSource(env("STELLAR_RPC_URL", "https://soroban-test
 const indexer = new Indexer(cfg, source, new FileStateStore(env("STATE_FILE", "data/state.json")), { now: () => new Date() }, log);
 const server = createApp(indexer).listen(Number(env("PORT", "3002")), () => log.info("listening"));
 
+const reader = new ContractChainReader(new SorobanSimulateCaller(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId, cfg.networkPassphrase));
+const reconcileEvery = Number(env("RECONCILE_EVERY_TICKS", "60"));
+let ticks = 0;
 let stopping = false;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function loop(): Promise<void> {
@@ -48,6 +52,7 @@ async function loop(): Promise<void> {
     try {
       const r = await indexer.tick();
       backoff = 1000;
+      if (++ticks % reconcileEvery === 0 && indexer.status === "SYNCED") await indexer.reconcile(reader);
       await sleep(r.ingested > 0 ? 0 : Number(env("POLL_MS", "5000")));
     } catch (e) {
       log.error("tick failed", { error: e instanceof Error ? e.message : String(e) });
