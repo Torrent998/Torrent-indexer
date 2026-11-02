@@ -1,0 +1,20 @@
+{
+  "schema": "torrent.synthetic-scenario",
+  "abiVersion": 1,
+  "description": "Logical script replayed by torrent-escrow tests; torrent-indexer replays the equivalent event stream to prove identical projection. Actors are labels, not addresses. Amounts are integer base units of a synthetic Testnet token.",
+  "steps": [
+    { "call": "create_pool", "emits": ["pool_created"] },
+    { "call": "allow_member+join_pool", "who": "alice", "emits": ["member_joined"] },
+    { "call": "allow_member+join_pool", "who": "bob", "emits": ["member_joined"] },
+    { "call": "deposit", "who": "controller", "amount": "1000", "emits": ["funded"] },
+    { "call": "issue_right", "to": "alice", "amount": "600", "maturityOffsetDays": 30, "emits": ["right_issued"] },
+    { "call": "propose_transfer", "right": 1, "to": "bob", "emits": ["transfer_proposed"] },
+    { "call": "accept_transfer", "transfer": 1, "emits": ["transfer_completed"] },
+    { "call": "advance_days", "days": 30, "emits": [] },
+    { "call": "claim", "right": 1, "recipient": "bob", "emits": ["right_claimed"] }
+  ],
+  "expectedFinal": {
+    "totals": { "funded": "1000", "reserved": "0", "claimed": "600", "withdrawn": "0" },
+    "right1": { "owner": "bob", "state": "Claimed", "amount": "600" }
+  }
+}
