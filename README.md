@@ -14,8 +14,9 @@
 | Cursor, dedup, durable store, replay/backfill, reorg rollback, fail-closed faults, reconciliation hook | implemented, 50+ tests including failure paths |
 | Read-only HTTP API (`/v1/ledger/events`, pools, rights, transfers, status) + JSON Schema snapshot | implemented |
 | `SorobanRpcSource` (real RPC adapter) | compiles; **never run against live Testnet** (no deployment exists, no network in the authoring sandbox) |
-| RPC-backed `ChainStateReader` for reconciliation | **not built** (interface + labeled test adapter only) |
-| Database, queues, auth, production use | **no** |
+| RPC-backed reconciliation (`ContractChainReader` over `get_totals`/`get_right` via simulateTransaction) | decoding tested on the contract's **real recorded return values**; `SorobanSimulateCaller` compiled, never run live |
+| Durable storage | SQLite (`node:sqlite`, WAL, migrations; row-level event writes; cursor commits atomically with events). The JSON file store remains for tests. node:sqlite is experimental in Node 22 |
+| Production use, queues, auth | **no** |
 
 Tests use `tests/helpers/fake-ledger.ts`, a clearly labeled **TEST ADAPTER** that replays recorded events; it is not an integration.
 
@@ -26,7 +27,7 @@ npm run check        # typecheck + eslint + vitest
 cp .env.example .env # then set TORRENT_ESCROW_CONTRACT_ID / CHAIN_START_LEDGER after a Testnet deploy
 npm run build && npm start
 ```
-Stop with Ctrl-C/SIGTERM (finishes the in-flight tick, then exits). State lives in `STATE_FILE` (default `data/state.json`, git-ignored). Testnet only: `main.ts` refuses other networks unless `ALLOW_NON_TESTNET=1`.
+Stop with Ctrl-C/SIGTERM (finishes the in-flight tick, then exits). State lives in SQLite at `DATABASE_PATH` (default `data/indexer.db`, git-ignored). Testnet only: `main.ts` refuses other networks unless `ALLOW_NON_TESTNET=1`.
 
 ## Public boundary (versioned, schemaVersion 1)
 - `GET /v1/ledger/events?cursor=&limit=` — events after `cursor` with `finality` and a reconciliation record; schema in `generated/ledger-events.schema.json`.

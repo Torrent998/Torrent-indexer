@@ -14,6 +14,6 @@ Status: accepted (M1). Sources: `docs/ARCHITECTURE.md`, `docs/SRD.md` (ledger wa
 
 ## Limits / not done
 - `SorobanRpcSource` has never run against a live Testnet RPC here; RPC history retention (days) means old deployments need a ledger-archive source (not built).
-- No RPC-backed `ChainStateReader` yet; `reconcile()` is tested with a labeled test adapter.
-- Single-file JSON store (O(n) rewrite). Fine for a Testnet demo; replace with a database before real volume.
+- `SorobanSimulateCaller` (RPC reads for reconciliation) has not run live; decoding is tested on recorded real values.
+- Storage is SQLite (see `sqlite-store.ts`); no Postgres, no multi-process access.
 - Shorter-chain rewinds (tip moves backwards) are not detected; Stellar does not do this.

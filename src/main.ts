@@ -5,7 +5,7 @@
  * Testnet in this repository. Tests use the labeled FakeLedgerSource instead.
  */
 import { Indexer } from "./indexer/indexer.js";
-import { FileStateStore } from "./indexer/store.js";
+import { SqliteStateStore } from "./indexer/sqlite-store.js";
 import { createApp } from "./http/server.js";
 import { SorobanRpcSource } from "./rpc/soroban-rpc-source.js";
 import { ContractChainReader, SorobanSimulateCaller } from "./rpc/soroban-chain-reader.js";
@@ -38,7 +38,7 @@ const cfg = {
   maxCheckpoints: 256,
 };
 const source = new SorobanRpcSource(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId);
-const indexer = new Indexer(cfg, source, new FileStateStore(env("STATE_FILE", "data/state.json")), { now: () => new Date() }, log);
+const indexer = new Indexer(cfg, source, new SqliteStateStore(env("DATABASE_PATH", "data/indexer.db")), { now: () => new Date() }, log);
 const server = createApp(indexer).listen(Number(env("PORT", "3002")), () => log.info("listening"));
 
 const reader = new ContractChainReader(new SorobanSimulateCaller(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId, cfg.networkPassphrase));
