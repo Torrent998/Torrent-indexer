@@ -4,7 +4,34 @@
 
 > Torrent — Ownership of when money becomes available.
 
-**Status: repository scaffold / not implemented.** This repo is one of **exactly four meaningful independent codebases** in the Torrent Stellar-native project. It is not a placeholder created merely to increase Drips Wave submissions.
+**Status: M0 + M1 implemented and tested against a recorded real contract event stream; NOT run against a live Testnet RPC.** This repo is one of **exactly four meaningful independent codebases** in the Torrent Stellar-native project. It is not a placeholder created merely to increase Drips Wave submissions.
+
+## Honest status
+| Item | State |
+|---|---|
+| Decoder for torrent-escrow ABI v1 events (table-driven, strict) | implemented; tested on **real** events recorded from the contract's test host (`fixtures/contract-stream.v1.json`) |
+| Deterministic projection (pools, members, rights, transfers, totals) with cross-checks against contract-reported totals | implemented |
+| Cursor, dedup, durable store, replay/backfill, reorg rollback, fail-closed faults, reconciliation hook | implemented, 50+ tests including failure paths |
+| Read-only HTTP API (`/v1/ledger/events`, pools, rights, transfers, status) + JSON Schema snapshot | implemented |
+| `SorobanRpcSource` (real RPC adapter) | compiles; **never run against live Testnet** (no deployment exists, no network in the authoring sandbox) |
+| RPC-backed `ChainStateReader` for reconciliation | **not built** (interface + labeled test adapter only) |
+| Database, queues, auth, production use | **no** |
+
+Tests use `tests/helpers/fake-ledger.ts`, a clearly labeled **TEST ADAPTER** that replays recorded events; it is not an integration.
+
+## Local startup
+```bash
+npm ci
+npm run check        # typecheck + eslint + vitest
+cp .env.example .env # then set TORRENT_ESCROW_CONTRACT_ID / CHAIN_START_LEDGER after a Testnet deploy
+npm run build && npm start
+```
+Stop with Ctrl-C/SIGTERM (finishes the in-flight tick, then exits). State lives in `STATE_FILE` (default `data/state.json`, git-ignored). Testnet only: `main.ts` refuses other networks unless `ALLOW_NON_TESTNET=1`.
+
+## Public boundary (versioned, schemaVersion 1)
+- `GET /v1/ledger/events?cursor=&limit=` — events after `cursor` with `finality` and a reconciliation record; schema in `generated/ledger-events.schema.json`.
+- `GET /v1/pools/:id`, `/v1/pools/:id/rights`, `/v1/rights/:id`, `/v1/transfers/:id`, `/v1/status`, `/healthz`.
+- Consumes torrent-contracts event schema v1 (`fixtures/`, mirrored from contracts@6b2bd11). Design: `docs/adr/0001-indexer-design.md`.
 
 ## Owns
 Soroban event ingestion, canonical ledger-derived read models, reconciliation, replay/backfill, settlement status and event API
