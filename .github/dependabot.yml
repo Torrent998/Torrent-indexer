@@ -8,6 +8,10 @@ updates:
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # Major upgrades are planned by hand (they need code changes and sibling coordination).
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     labels:
       - "dependencies"
   - package-ecosystem: "github-actions"
@@ -15,5 +19,9 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    ignore:
+      # Major upgrades are planned by hand (they need code changes and sibling coordination).
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     labels:
       - "dependencies"
