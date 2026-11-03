@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in Torrent-indexer behaves differently from its documentation or tests.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. **Security issues must not be reported here**; follow [SECURITY.md](https://github.com/Torrent998/Torrent-indexer/blob/main/SECURITY.md).
+        Never paste secret keys, seed phrases, tokens or personal data.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps, ideally a failing test or the command you ran.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit
+      description: Output of `git rev-parse --short HEAD`.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it show up?
+      options:
+        - Only in this repository
+        - At a boundary with a sibling repository (fixtures, API, ABI or events)
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Node.js or Rust version, browser if relevant.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or output
+      render: shell

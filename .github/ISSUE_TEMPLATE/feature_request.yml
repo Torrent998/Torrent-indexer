@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a change to what Torrent-indexer owns.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Torrent's financial rules come first: no unfunded payout rights, no state shown as settled before the
+        ledger confirms it, no secret keys in clients. Check [docs/CONTRIBUTOR_ISSUES.md](https://github.com/Torrent998/Torrent-indexer/blob/main/docs/CONTRIBUTOR_ISSUES.md) for scoped tasks first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Who needs this and why? What is hard or impossible today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should change, and which files or interfaces it touches.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance tests
+      description: How a reviewer can verify it, including failure paths.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Sibling repository impact
+      description: Does this change the OpenAPI, ABI, event schema or fixtures another repository consumes?
+  - type: textarea
+    id: nongoals
+    attributes:
+      label: Non-goals
