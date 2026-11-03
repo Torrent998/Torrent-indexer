@@ -5,13 +5,13 @@
     "/v1/status": {
       "schemaVersion": 1,
       "network": "testnet",
-      "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+      "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
       "status": "SYNCED",
-      "cursor": "0000000489626275840-0000000000",
-      "scannedThrough": 119,
-      "latestObservedLedger": 119,
+      "cursor": "0000000566935687168-0000000001",
+      "scannedThrough": 137,
+      "latestObservedLedger": 137,
       "lagLedgers": 0,
-      "eventCount": 14,
+      "eventCount": 35,
       "reorgCount": 0,
       "confirmations": 3,
       "faults": []
@@ -25,13 +25,13 @@
           "ledger": 101,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "d3f31abf1a872b78840cf08578d8ccf1b4a3bce350cdddf309cfb4c5810882ca",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "pool_created",
           "refs": {
             "poolId": "1"
           },
           "data": {
-            "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
             "token": "CBWLJK3P6ECN2KZZPKGUIIJ6BCJPXNQTMHMJJGJPZ2ITUJFHPXHUQGBS",
             "membership_policy_hash": "0707070707070707070707070707070707070707070707070707070707070707",
             "start_ledger": "101"
@@ -53,13 +53,13 @@
           "ledger": 102,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "92105ae48728b7472690bb0a1f013a169385d1ea50dea8b74601a13a171e2c4d",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "member_joined",
           "refs": {
             "poolId": "1"
           },
           "data": {
-            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
           },
           "finality": "CONFIRMED",
           "reconciliation": {
@@ -78,13 +78,13 @@
           "ledger": 103,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "bf8f9afee977638b31ddddab3d5e7409c7e0b18b302cf8f0e4313973db119491",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "member_joined",
           "refs": {
             "poolId": "1"
           },
           "data": {
-            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
+            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
           },
           "finality": "CONFIRMED",
           "reconciliation": {
@@ -103,14 +103,14 @@
           "ledger": 104,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "c3b9fb78a452ce2fc90cff1608510235503e3b727683b71c7fefee54198bad63",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "funded",
           "refs": {
             "poolId": "1"
           },
           "data": {
             "receipt_id": "1",
-            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
             "amount": "1000",
             "funded_total": "1000"
           },
@@ -131,14 +131,14 @@
           "ledger": 105,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "af20a5f8176fe79f3dc970296205c9c034d67384883c6d8c7479c484d150da63",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "right_issued",
           "refs": {
             "poolId": "1",
             "rightId": "1"
           },
           "data": {
-            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
             "amount": "600",
             "maturity": "3592000",
             "reserved_total": "600"
@@ -160,15 +160,15 @@
           "ledger": 106,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "297fbdccf6dea40a2ebf7fe78d20051e6fac94a65031327eb30e15144e82e075",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "transfer_proposed",
           "refs": {
             "rightId": "1",
             "transferId": "1"
           },
           "data": {
-            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
             "expiry": "1432000"
           },
           "finality": "CONFIRMED",
@@ -188,15 +188,15 @@
           "ledger": 107,
           "ledgerClosedAt": "1970-01-12T13:46:40.000Z",
           "txHash": "39013f3bf28e8dfa8d3854a65dfb3bf348aeba75b5f8267dd719581659334d39",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "transfer_completed",
           "refs": {
             "rightId": "1",
             "transferId": "1"
           },
           "data": {
-            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
           },
           "finality": "CONFIRMED",
           "reconciliation": {
@@ -215,15 +215,15 @@
           "ledger": 108,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "dd1b3c312cf7d816130354452e9629ce39355b0c534129dd26a08cd9a4502ede",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "right_claimed",
           "refs": {
             "poolId": "1",
             "rightId": "1"
           },
           "data": {
-            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
-            "recipient": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
+            "recipient": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
             "amount": "600",
             "claimed_total": "600"
           },
@@ -244,14 +244,14 @@
           "ledger": 109,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "fb2d03357cb68456f5c304bad6fa531ce4e6938189476df29aa24897f48630db",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "right_issued",
           "refs": {
             "poolId": "1",
             "rightId": "2"
           },
           "data": {
-            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
             "amount": "100",
             "maturity": "8776000",
             "reserved_total": "100"
@@ -273,15 +273,15 @@
           "ledger": 110,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "8b5db0eea611c03e33fc19ff8f43709c171410a4d5d88cc4f38531a6aec5d85a",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "transfer_proposed",
           "refs": {
             "rightId": "2",
             "transferId": "2"
           },
           "data": {
-            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
             "expiry": "4456000"
           },
           "finality": "CONFIRMED",
@@ -301,7 +301,7 @@
           "ledger": 111,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "93d94b0fb3b452160234fccbfce49608d014c14a152d60a597418689dfbccba6",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "transfer_cancelled",
           "refs": {
             "rightId": "2",
@@ -325,13 +325,13 @@
           "ledger": 112,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "737fdd554c57c67bcf231f758ed703bceb203a1cf6327cc3cebe662466ae5706",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "unreserved_withdrawn",
           "refs": {
             "poolId": "1"
           },
           "data": {
-            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
             "amount": "300",
             "withdrawn_total": "300"
           },
@@ -352,7 +352,7 @@
           "ledger": 113,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "6210c0bf05396716df932f0729df69de0533933e5ad9871fd07b61811c4c28df",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "pool_paused",
           "refs": {
             "poolId": "1"
@@ -375,7 +375,7 @@
           "ledger": 114,
           "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
           "txHash": "6d9340634459d3f79f62b77cec022cd250902c88dec9a12e6b04812bf3149bff",
-          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
           "name": "pool_unpaused",
           "refs": {
             "poolId": "1"
@@ -392,36 +392,570 @@
             "status": "CONFIRMED",
             "observedAt": "2026-01-01T00:00:00.000Z"
           }
+        },
+        {
+          "id": "0000000493921243136-0000000000",
+          "ledger": 115,
+          "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
+          "txHash": "6b888a0706c77f48fcf1e69993a8000f6404b51e03187cf2ea8ef9b80513d60b",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "funded",
+          "refs": {
+            "poolId": "1"
+          },
+          "data": {
+            "receipt_id": "2",
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "amount": "200",
+            "funded_total": "1200"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000493921243136-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000493921243136-0000000000",
+            "entityRef": "pool:1",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000498216210432-0000000000",
+          "ledger": 116,
+          "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
+          "txHash": "5f839bf8fe0cd0f009f05b58d8967bf7314e0e0a829c432982509e2f8d16b61a",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "right_issued",
+          "refs": {
+            "poolId": "1",
+            "rightId": "3"
+          },
+          "data": {
+            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "amount": "50",
+            "maturity": "4024000",
+            "reserved_total": "150"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000498216210432-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000498216210432-0000000000",
+            "entityRef": "right:3",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000502511177728-0000000000",
+          "ledger": 117,
+          "ledgerClosedAt": "1970-02-11T13:46:40.000Z",
+          "txHash": "1a603e42b4cc3d2c576a053e5ac6160d2e1c2ed67317906c27b0793f7a9a0940",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "transfer_proposed",
+          "refs": {
+            "rightId": "3",
+            "transferId": "3"
+          },
+          "data": {
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
+            "expiry": "3678400"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000502511177728-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000502511177728-0000000000",
+            "entityRef": "transfer:3",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000506806145024-0000000000",
+          "ledger": 118,
+          "ledgerClosedAt": "1970-02-13T13:46:40.000Z",
+          "txHash": "7094bb8e62c06f5de751bcf77e52d1153df437bebb45189d819559f8f1b0b76c",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "transfer_cancelled",
+          "refs": {
+            "rightId": "3",
+            "transferId": "3"
+          },
+          "data": {},
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000506806145024-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000506806145024-0000000000",
+            "entityRef": "transfer:3",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000506806145024-0000000001",
+          "ledger": 118,
+          "ledgerClosedAt": "1970-02-13T13:46:40.000Z",
+          "txHash": "7094bb8e62c06f5de751bcf77e52d1153df437bebb45189d819559f8f1b0b76c",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "transfer_proposed",
+          "refs": {
+            "rightId": "3",
+            "transferId": "4"
+          },
+          "data": {
+            "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
+            "expiry": "3851200"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000506806145024-0000000001",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000506806145024-0000000001",
+            "entityRef": "transfer:4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000511101112320-0000000000",
+          "ledger": 119,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "2d9774ebc4dd5086d5346ca8794e65ccf0c20c589693048c0b36c2625c02bec5",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "transfer_cancelled",
+          "refs": {
+            "rightId": "3",
+            "transferId": "4"
+          },
+          "data": {},
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000511101112320-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000511101112320-0000000000",
+            "entityRef": "transfer:4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000511101112320-0000000001",
+          "ledger": 119,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "2d9774ebc4dd5086d5346ca8794e65ccf0c20c589693048c0b36c2625c02bec5",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "right_claimed",
+          "refs": {
+            "poolId": "1",
+            "rightId": "3"
+          },
+          "data": {
+            "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "recipient": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+            "amount": "50",
+            "claimed_total": "650"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000511101112320-0000000001",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000511101112320-0000000001",
+            "entityRef": "right:3",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000515396079616-0000000000",
+          "ledger": 120,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "f1ef70a7bbb1dcfd455cd36c6f1be909b6ac9e5be8b03381581aad8af2f5091a",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "member_left",
+          "refs": {
+            "poolId": "1"
+          },
+          "data": {
+            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000515396079616-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000515396079616-0000000000",
+            "entityRef": "pool:1",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000519691046912-0000000000",
+          "ledger": 121,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "226750f2fa7d5fba8dbb89c15d48b4fc80b1207e1440119dd76d7cbf2d4d8fbd",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "controller_proposed",
+          "refs": {
+            "poolId": "1"
+          },
+          "data": {
+            "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "proposed": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000519691046912-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000519691046912-0000000000",
+            "entityRef": "pool:1",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000523986014208-0000000000",
+          "ledger": 122,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "51b8c26bc1c7358f6083f33c4dd0f63ebb711e7222f5738ecdbf7400b719701d",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "controller_changed",
+          "refs": {
+            "poolId": "1"
+          },
+          "data": {
+            "previous": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000523986014208-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000523986014208-0000000000",
+            "entityRef": "pool:1",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000528280981504-0000000000",
+          "ledger": 123,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "7563969d7c1a5b414e3fa987c9d9d63209c3da26f3746481c5174ead20bf2881",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "pool_closed",
+          "refs": {
+            "poolId": "1"
+          },
+          "data": {},
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000528280981504-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000528280981504-0000000000",
+            "entityRef": "pool:1",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000532575948800-0000000000",
+          "ledger": 124,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "e23bda3bceeb40c6b9ab2bde37a7bcc39f8a57e677342421cba5002dceac442c",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "pool_created",
+          "refs": {
+            "poolId": "2"
+          },
+          "data": {
+            "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "token": "CBWLJK3P6ECN2KZZPKGUIIJ6BCJPXNQTMHMJJGJPZ2ITUJFHPXHUQGBS",
+            "membership_policy_hash": "0707070707070707070707070707070707070707070707070707070707070707",
+            "start_ledger": "124"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000532575948800-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000532575948800-0000000000",
+            "entityRef": "pool:2",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000536870916096-0000000000",
+          "ledger": 125,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "eaa6e4cba97db6be84e44b1c26a51e462a19ad571da8b371eacde31489c2b09c",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "member_joined",
+          "refs": {
+            "poolId": "2"
+          },
+          "data": {
+            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000536870916096-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000536870916096-0000000000",
+            "entityRef": "pool:2",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000541165883392-0000000000",
+          "ledger": 126,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "65e90a2fee157962cf3c623208f6ebac37faf69e0d4c1182c8fa7f423d14d64b",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "member_removed",
+          "refs": {
+            "poolId": "2"
+          },
+          "data": {
+            "member": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000541165883392-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000541165883392-0000000000",
+            "entityRef": "pool:2",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000545460850688-0000000000",
+          "ledger": 127,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "2d893db3022a5916ee2e0aac506ad93010c40e68454bb032c56c16d4709d2da7",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "admin_proposed",
+          "refs": {},
+          "data": {
+            "admin": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+            "proposed": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000545460850688-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000545460850688-0000000000",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000549755817984-0000000000",
+          "ledger": 128,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "6865cdf96fa8edcfd1d41da9f20dd9a91e4c9ee0486c094c0b2427b707884d82",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "admin_changed",
+          "refs": {},
+          "data": {
+            "previous": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
+            "admin": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000549755817984-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000549755817984-0000000000",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000554050785280-0000000000",
+          "ledger": 129,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "0f67c7be30518be94c857ad0de901d36e7a302a3777c75b03a6af01dc03a8064",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "upgrade_proposed",
+          "refs": {},
+          "data": {
+            "wasm_hash": "abababababababababababababababababababababababababababababababab",
+            "executable_after": "4628800"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000554050785280-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000554050785280-0000000000",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000558345752576-0000000000",
+          "ledger": 130,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "0b2f47bcc2f5c63fbe6687048c9c5852de6325b2c402d029341ac4375452ff2e",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "upgrade_cancelled",
+          "refs": {},
+          "data": {
+            "wasm_hash": "abababababababababababababababababababababababababababababababab"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000558345752576-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000558345752576-0000000000",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000562640719872-0000000000",
+          "ledger": 131,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "58450c5c68f71e7e3daca29a8982a3cdae802bf4d13cd77b2a5bf1d6d89efbaa",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "upgrade_proposed",
+          "refs": {},
+          "data": {
+            "wasm_hash": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+            "executable_after": "4628800"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000562640719872-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000562640719872-0000000000",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000566935687168-0000000000",
+          "ledger": 132,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "1531ce08dc667551228dfcc34be6633fec023d0acc418ba1baa0500752a23d37",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "upgrade_cancelled",
+          "refs": {},
+          "data": {
+            "wasm_hash": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+          },
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000566935687168-0000000000",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000566935687168-0000000000",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        {
+          "id": "0000000566935687168-0000000001",
+          "ledger": 132,
+          "ledgerClosedAt": "1970-02-16T13:46:40.000Z",
+          "txHash": "1531ce08dc667551228dfcc34be6633fec023d0acc418ba1baa0500752a23d37",
+          "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+          "name": "upgrades_locked",
+          "refs": {},
+          "data": {},
+          "finality": "CONFIRMED",
+          "reconciliation": {
+            "id": "torrent-indexer:0000000566935687168-0000000001",
+            "sourceRepo": "torrent-indexer",
+            "schemaVersion": 1,
+            "network": "testnet",
+            "ledgerCursor": "0000000566935687168-0000000001",
+            "entityRef": "contract:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+            "status": "CONFIRMED",
+            "observedAt": "2026-01-01T00:00:00.000Z"
+          }
         }
       ],
-      "nextCursor": "0000000489626275840-0000000000",
+      "nextCursor": "0000000566935687168-0000000001",
       "indexerStatus": "SYNCED"
     },
     "/v1/pools/1": {
       "poolId": "1",
-      "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+      "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON",
       "token": "CBWLJK3P6ECN2KZZPKGUIIJ6BCJPXNQTMHMJJGJPZ2ITUJFHPXHUQGBS",
       "membershipPolicyHash": "0707070707070707070707070707070707070707070707070707070707070707",
       "startLedger": 101,
-      "status": "Active",
+      "status": "Closed",
       "members": [
-        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
         "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
       ],
-      "receipts": 1,
+      "departedMembers": [
+        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+      ],
+      "pendingController": null,
+      "receipts": 2,
       "totals": {
-        "funded": "1000",
+        "funded": "1200",
         "reserved": "100",
-        "claimed": "600",
+        "claimed": "650",
         "withdrawn": "300"
       },
       "createdAtLedger": 101,
       "coverage": {
-        "unreserved": "0",
+        "unreserved": "150",
         "fullyBacked": true
       },
       "indexerStatus": "SYNCED",
-      "latestObservedLedger": 119
+      "latestObservedLedger": 137
     },
     "/v1/pools/1/rights": {
       "rights": [
@@ -429,7 +963,7 @@
           "rightId": "1",
           "poolId": "1",
           "amount": "600",
-          "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+          "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
           "maturity": 3592000,
           "state": "Claimed",
           "pendingTransfer": null,
@@ -440,62 +974,142 @@
           "rightId": "2",
           "poolId": "1",
           "amount": "100",
-          "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+          "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
           "maturity": 8776000,
           "state": "Issued",
           "pendingTransfer": null,
           "issuedAtLedger": 109,
           "claimedAtLedger": null
+        },
+        {
+          "rightId": "3",
+          "poolId": "1",
+          "amount": "50",
+          "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+          "maturity": 4024000,
+          "state": "Claimed",
+          "pendingTransfer": null,
+          "issuedAtLedger": 116,
+          "claimedAtLedger": 119
         }
       ],
       "indexerStatus": "SYNCED",
-      "latestObservedLedger": 119
+      "latestObservedLedger": 137
     },
     "/v1/rights/1": {
       "rightId": "1",
       "poolId": "1",
       "amount": "600",
-      "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
       "maturity": 3592000,
       "state": "Claimed",
       "pendingTransfer": null,
       "issuedAtLedger": 105,
       "claimedAtLedger": 108,
       "indexerStatus": "SYNCED",
-      "latestObservedLedger": 119
+      "latestObservedLedger": 137
     },
     "/v1/rights/2": {
       "rightId": "2",
       "poolId": "1",
       "amount": "100",
-      "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+      "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
       "maturity": 8776000,
       "state": "Issued",
       "pendingTransfer": null,
       "issuedAtLedger": 109,
       "claimedAtLedger": null,
       "indexerStatus": "SYNCED",
-      "latestObservedLedger": 119
+      "latestObservedLedger": 137
     },
     "/v1/transfers/1": {
       "transferId": "1",
       "rightId": "1",
-      "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-      "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
       "expiry": 1432000,
       "status": "Completed",
       "indexerStatus": "SYNCED",
-      "latestObservedLedger": 119
+      "latestObservedLedger": 137
     },
     "/v1/transfers/2": {
       "transferId": "2",
       "rightId": "2",
-      "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-      "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
       "expiry": 4456000,
       "status": "Cancelled",
       "indexerStatus": "SYNCED",
-      "latestObservedLedger": 119
+      "latestObservedLedger": 137
+    },
+    "/v1/pools/2": {
+      "poolId": "2",
+      "controller": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+      "token": "CBWLJK3P6ECN2KZZPKGUIIJ6BCJPXNQTMHMJJGJPZ2ITUJFHPXHUQGBS",
+      "membershipPolicyHash": "0707070707070707070707070707070707070707070707070707070707070707",
+      "startLedger": 124,
+      "status": "Active",
+      "members": [],
+      "departedMembers": [],
+      "pendingController": null,
+      "receipts": 0,
+      "totals": {
+        "funded": "0",
+        "reserved": "0",
+        "claimed": "0",
+        "withdrawn": "0"
+      },
+      "createdAtLedger": 124,
+      "coverage": {
+        "unreserved": "0",
+        "fullyBacked": true
+      },
+      "indexerStatus": "SYNCED",
+      "latestObservedLedger": 137
+    },
+    "/v1/rights/3": {
+      "rightId": "3",
+      "poolId": "1",
+      "amount": "50",
+      "owner": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "maturity": 4024000,
+      "state": "Claimed",
+      "pendingTransfer": null,
+      "issuedAtLedger": 116,
+      "claimedAtLedger": 119,
+      "indexerStatus": "SYNCED",
+      "latestObservedLedger": 137
+    },
+    "/v1/transfers/3": {
+      "transferId": "3",
+      "rightId": "3",
+      "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
+      "expiry": 3678400,
+      "status": "Cancelled",
+      "indexerStatus": "SYNCED",
+      "latestObservedLedger": 137
+    },
+    "/v1/transfers/4": {
+      "transferId": "4",
+      "rightId": "3",
+      "from": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
+      "to": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
+      "expiry": 3851200,
+      "status": "Cancelled",
+      "indexerStatus": "SYNCED",
+      "latestObservedLedger": 137
+    },
+    "/v1/contract": {
+      "contractId": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
+      "abiVersion": 2,
+      "admin": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5",
+      "pendingAdmin": null,
+      "pendingUpgrade": null,
+      "upgradesLocked": true,
+      "upgrades": [],
+      "indexerStatus": "SYNCED",
+      "latestObservedLedger": 137
     }
   }
 }

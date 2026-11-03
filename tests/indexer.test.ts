@@ -11,6 +11,7 @@ import {
   FakeLedgerSource,
   FixedClock,
   LAST_LEDGER,
+  STREAM_LEN,
   eventId,
   makeIndexer,
   stream,
@@ -28,11 +29,11 @@ const reference = async () => {
 describe("backfill and cursor", () => {
   it("backfills the whole stream from the deployment ledger", async () => {
     const { ix } = await reference();
-    expect(ix.events).toHaveLength(14);
+    expect(ix.events).toHaveLength(STREAM_LEN);
     expect(ix.status).toBe("SYNCED");
     expect(ix.info.cursor).toBe(ix.events.at(-1)!.id);
     expect(ix.info.scannedThrough).toBe(LAST_LEDGER);
-    expect(ix.model.pools.get("1")!.totals.claimed).toBe(600n);
+    expect(ix.model.pools.get("1")!.totals.claimed).toBe(650n);
   });
 
   it("is independent of page size (1, 3, 50 give identical projections)", async () => {
@@ -86,7 +87,7 @@ describe("idempotency", () => {
     const r = await ix.tick();
     expect(r.duplicates).toBe(3);
     await ix.catchUp();
-    expect(ix.events).toHaveLength(14);
+    expect(ix.events).toHaveLength(STREAM_LEN);
     expect(snap(ix)).toBe(snapshot);
     expect(ix.status).toBe("SYNCED");
   });
@@ -105,7 +106,7 @@ describe("idempotency", () => {
 
   it("halts on an unseen event id behind the cursor (missed/out-of-order delivery)", async () => {
     const evs = streamEvents();
-    const src = new FakeLedgerSource(evs.filter((e) => e !== evs[2]));
+    const src = new FakeLedgerSource(evs.slice(0, 4).filter((e) => e !== evs[2]));
     const ix = makeIndexer(src);
     await ix.catchUp();
     // the skipped event is now (wrongly) delivered late
@@ -162,7 +163,7 @@ describe("fail-closed behaviour", () => {
     const ix = makeIndexer(new FakeLedgerSource([other, failed, ...evs]));
     await ix.catchUp();
     expect(ix.status).toBe("SYNCED");
-    expect(ix.events).toHaveLength(14);
+    expect(ix.events).toHaveLength(STREAM_LEN);
   });
 
   it("refuses to boot on state persisted for another network/contract", () => {
@@ -181,7 +182,7 @@ describe("fail-closed behaviour", () => {
     await expect(ix.tick()).rejects.toThrow("rpc timeout");
     expect(ix.events).toHaveLength(before);
     await ix.catchUp();
-    expect(ix.events).toHaveLength(14);
+    expect(ix.events).toHaveLength(STREAM_LEN);
     expect(ix.faults).toHaveLength(0);
   });
 });
@@ -220,8 +221,8 @@ describe("durability and replay", () => {
     await ix.catchUp();
     writeFileSync(`${path}.tmp`, "{ half a wri"); // simulated crash mid-write
     const back = makeIndexer(new FakeLedgerSource(streamEvents()), {}, new FileStateStore(path));
-    expect(back.events).toHaveLength(14);
-    expect(JSON.parse(readFileSync(path, "utf8")).events).toHaveLength(14);
+    expect(back.events).toHaveLength(STREAM_LEN);
+    expect(JSON.parse(readFileSync(path, "utf8")).events).toHaveLength(STREAM_LEN);
   });
 
   it("replay from the deployment ledger rebuilds an identical projection", async () => {
@@ -303,6 +304,9 @@ describe("reconciliation against authoritative chain state", () => {
     const reader = new FakeChainReader();
     for (const p of ix.model.pools.values()) reader.totals.set(p.poolId, { ...p.totals });
     for (const r of ix.model.rights.values()) reader.owners.set(r.rightId, { owner: r.owner, claimed: r.state === "Claimed" });
+    for (const p of ix.model.pools.values()) reader.pools.set(p.poolId, { status: p.status, controller: p.controller });
+    const g = ix.model.governance;
+    reader.governance = { admin: g.admin!, pendingUpgrade: g.pendingUpgrade?.wasmHash ?? null, upgradesLocked: g.upgradesLocked };
     expect(await ix.reconcile(reader)).toEqual([]);
     expect(ix.status).toBe("SYNCED");
   });
@@ -312,10 +316,28 @@ describe("reconciliation against authoritative chain state", () => {
     const reader = new FakeChainReader();
     for (const p of ix.model.pools.values()) reader.totals.set(p.poolId, { ...p.totals, claimed: 599n });
     for (const r of ix.model.rights.values()) reader.owners.set(r.rightId, { owner: "GSOMEONEELSE", claimed: r.state === "Claimed" });
+    for (const p of ix.model.pools.values()) reader.pools.set(p.poolId, { status: p.status, controller: p.controller });
+    reader.governance = { admin: ix.model.governance.admin!, pendingUpgrade: null, upgradesLocked: true };
     const found = await ix.reconcile(reader);
-    expect(found.length).toBe(3);
+    expect(found.length).toBe(ix.model.pools.size + ix.model.rights.size);
     expect(ix.status).toBe("RECONCILING");
     expect((await ix.tick()).ingested).toBe(0);
+  });
+
+  it("flags a pool status, controller or governance divergence (v2)", async () => {
+    const { ix } = await reference();
+    const reader = new FakeChainReader();
+    for (const p of ix.model.pools.values()) reader.totals.set(p.poolId, { ...p.totals });
+    for (const r of ix.model.rights.values()) reader.owners.set(r.rightId, { owner: r.owner, claimed: r.state === "Claimed" });
+    for (const p of ix.model.pools.values()) reader.pools.set(p.poolId, { status: "Active", controller: "GELSEWHERE" });
+    reader.governance = { admin: "GELSEWHERE", pendingUpgrade: "ab".repeat(32), upgradesLocked: false };
+    const msgs = (await ix.reconcile(reader)).map((f) => f.message).join("\n");
+    expect(msgs).toMatch(/pool 1 status: chain Active != indexed Closed/);
+    expect(msgs).toMatch(/pool 1 controller/);
+    expect(msgs).toMatch(/upgradesLocked/);
+    expect(msgs).toMatch(/pending upgrade/);
+    expect(msgs).toMatch(/admin: chain GELSEWHERE/);
+    expect(ix.status).toBe("RECONCILING");
   });
 });
 

@@ -12,7 +12,7 @@ export interface EventSpec {
 const N = { network_id: "bytes32" } as const;
 
 /**
- * ABI v1 event table. MUST equal torrent-contracts bindings/events.v1.json
+ * ABI v2 event table. MUST equal torrent-contracts bindings/events.v2.json
  * (mirrored in fixtures/); tests/spec-mirror.test.ts enforces that.
  */
 export const EVENT_SPECS: Record<EventName, EventSpec> = {
@@ -48,6 +48,19 @@ export const EVENT_SPECS: Record<EventName, EventSpec> = {
   },
   pool_paused: { topics: ["pool_id"], data: { ...N } },
   pool_unpaused: { topics: ["pool_id"], data: { ...N } },
+  // ---- v2 ----
+  pool_closed: { topics: ["pool_id"], data: { ...N } },
+  member_removed: { topics: ["pool_id"], data: { ...N, member: "address" } },
+  member_left: { topics: ["pool_id"], data: { ...N, member: "address" } },
+  controller_proposed: { topics: ["pool_id"], data: { ...N, controller: "address", proposed: "address" } },
+  controller_changed: { topics: ["pool_id"], data: { ...N, previous: "address", controller: "address" } },
+  // Contract-level governance events carry no id topic.
+  admin_proposed: { topics: [], data: { ...N, admin: "address", proposed: "address" } },
+  admin_changed: { topics: [], data: { ...N, previous: "address", admin: "address" } },
+  upgrade_proposed: { topics: [], data: { ...N, wasm_hash: "bytes32", executable_after: "u64" } },
+  upgrade_cancelled: { topics: [], data: { ...N, wasm_hash: "bytes32" } },
+  contract_upgraded: { topics: [], data: { ...N, wasm_hash: "bytes32" } },
+  upgrades_locked: { topics: [], data: { ...N } },
 };
 
-export const ABI_VERSION = 1;
+export const ABI_VERSION = 2;

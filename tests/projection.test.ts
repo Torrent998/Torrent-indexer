@@ -27,9 +27,13 @@ describe("Projection from the real event stream", () => {
   it("derives the exact end state of the contract scenario", () => {
     const p = Projection.replay(events());
     const pool = p.pools.get("1")!;
-    expect(pool.totals).toEqual({ funded: 1000n, reserved: 100n, claimed: 600n, withdrawn: 300n });
-    expect(pool.status).toBe("Active");
-    expect(pool.members).toHaveLength(2);
+    expect(pool.totals).toEqual({ funded: 1200n, reserved: 100n, claimed: 650n, withdrawn: 300n });
+    expect(pool.status).toBe("Closed");
+    expect(pool.members).toHaveLength(1); // bob left
+    expect(pool.departedMembers).toHaveLength(1);
+    expect(pool.controller).not.toBe(events()[0]!.data["controller"]); // rotated
+    expect(pool.pendingController).toBeNull();
+    expect(p.pools.get("2")).toMatchObject({ status: "Active", members: [] }); // carol removed
     const r1 = p.rights.get("1")!;
     expect(r1).toMatchObject({ state: "Claimed", amount: 600n, pendingTransfer: null });
     expect(r1.owner).toBe(events()[6]!.data["to"]); // bob, via the completed transfer
@@ -102,23 +106,80 @@ describe("Projection refuses inconsistent streams (fail closed)", () => {
     ).toMatch(/overcollateralization/);
   });
 
-  it("a new proposal while the previous one is still live, but not when it expired", () => {
+  it("a new proposal while the previous one is still live", () => {
     const live = clone(evs[9]!, { id: "9".repeat(19) + "-0000000002", refs: { rightId: "2", transferId: "3" } });
-    const base = upTo(10); // second proposal (transfer 2, right 2) is pending, expiry = START+40d
-    expect(faultOf(() => Projection.replay([...base, live])).message).toMatch(/still live/);
-    const afterExpiry = clone(live, { ledgerClosedAt: new Date((1_000_000 + 41 * 86_400) * 1000).toISOString() });
-    const p = Projection.replay([...base, afterExpiry]);
-    expect(p.transfers.get("2")!.status).toBe("Superseded");
-    expect(p.rights.get("2")!.pendingTransfer).toBe("3");
+    expect(faultOf(() => Projection.replay([...upTo(10), live])).message).toMatch(/still live/);
   });
 
-  it("claiming voids a pending transfer implicitly (contract emits no cancel event)", () => {
-    const e = evs;
-    const proposal = clone(e[5]!, { refs: { rightId: "1", transferId: "1" } });
-    // right 1: propose, then claim without completing
-    const claim = clone(e[7]!, { data: { owner: e[5]!.data["from"]! } });
-    const p = Projection.replay([...e.slice(0, 5), proposal, claim]);
-    expect(p.transfers.get("1")!.status).toBe("Cancelled");
-    expect(p.rights.get("1")!.pendingTransfer).toBeNull();
+  it("v2: a replaced or claim-voided offer must be evented (no silent status changes)", () => {
+    // Real stream: 16 propose t3, 17 cancel t3, 18 propose t4, 19 cancel t4, 20 claim r3.
+    expect(evs[17]!.name).toBe("transfer_cancelled");
+    expect(evs[19]!.name).toBe("transfer_cancelled");
+    const ok = Projection.replay(upTo(21));
+    expect(ok.transfers.get("3")!.status).toBe("Cancelled");
+    expect(ok.transfers.get("4")!.status).toBe("Cancelled");
+    expect(ok.rights.get("3")).toMatchObject({ state: "Claimed", pendingTransfer: null });
+    expect(faultOf(() => Projection.replay([...upTo(17), evs[18]!])).message).toMatch(/without a transfer_cancelled/);
+    expect(faultOf(() => Projection.replay([...upTo(19), evs[20]!])).message).toMatch(/not cancelled first/);
+  });
+});
+
+describe("v2 lifecycle and governance consistency (fail closed)", () => {
+  const evs = events();
+  const upTo = (n: number) => evs.slice(0, n);
+  const at = (e: IndexedEvent, secs: number) => clone(e, { ledgerClosedAt: new Date(secs * 1000).toISOString() });
+
+  it("timing rules: no offer on a matured right, none beyond maturity, none after close", () => {
+    const r3 = Projection.replay(upTo(16)).rights.get("3")!;
+    expect(faultOf(() => Projection.replay([...upTo(16), at(evs[16]!, r3.maturity)])).message).toMatch(/matured right/);
+    expect(faultOf(() => Projection.replay([...upTo(16), clone(evs[16]!, { data: { expiry: String(r3.maturity + 1) } })])).message).toMatch(/outlives/);
+  });
+
+  it("nothing new enters a closed pool", () => {
+    const closed = upTo(25); // ... pool_closed (24)
+    expect(Projection.replay(closed).pools.get("1")!.status).toBe("Closed");
+    const f = (e: IndexedEvent) => faultOf(() => Projection.replay([...closed, clone(e, { id: "9".repeat(19) + "-0000000003" })])).message;
+    expect(f(clone(evs[14]!, { data: { receipt_id: "3", funded_total: "1400" } }))).toMatch(/closed/);
+    expect(f(evs[12]!)).toMatch(/closed/); // pause
+    expect(f(evs[24]!)).toMatch(/already closed/);
+  });
+
+  it("membership: leaving while owning a right, removal after funding", () => {
+    // alice owns right 2 (unclaimed) throughout
+    const aliceLeaves = clone(evs[21]!, { data: { member: evs[15]!.data["owner"]! } });
+    expect(faultOf(() => Projection.replay([...upTo(21), aliceLeaves])).message).toMatch(/owning an unclaimed right/);
+    const removeAfterFunding = clone(evs[27]!, { refs: { poolId: "1" } });
+    expect(faultOf(() => Projection.replay([...upTo(21), removeAfterFunding])).message).toMatch(/after funding/);
+    const p = Projection.replay(upTo(28)).pools.get("2")!;
+    expect(p.members).toEqual([]);
+  });
+
+  it("controller rotation must match the pending proposal", () => {
+    const wrong = clone(evs[23]!, { data: { controller: evs[0]!.data["token"]! } });
+    expect(faultOf(() => Projection.replay([...upTo(23), wrong])).message).toMatch(/pending proposal/);
+    expect(faultOf(() => Projection.replay([...upTo(22), evs[23]!])).message).toMatch(/pending proposal/);
+  });
+
+  it("upgrades: one pending at a time, cancel must match, none after lock, executed only after the timelock", () => {
+    expect(faultOf(() => Projection.replay([...upTo(31), evs[32]!])).message).toMatch(/while one is pending/);
+    expect(faultOf(() => Projection.replay([...upTo(30), clone(evs[31]!, { data: { wasm_hash: "00".repeat(32) } })])).message).toMatch(/not the pending one/);
+    expect(faultOf(() => Projection.replay([...upTo(35), clone(evs[32]!, { id: "9".repeat(19) + "-0000000004" })])).message).toMatch(/locked/);
+    const proposed = Projection.replay(upTo(33)).governance.pendingUpgrade!;
+    const exec = (secs: number): IndexedEvent => ({
+      ...evs[33]!, name: "contract_upgraded", data: { wasm_hash: proposed.wasmHash }, ledgerClosedAt: new Date(secs * 1000).toISOString(),
+    });
+    expect(faultOf(() => Projection.replay([...upTo(33), exec(proposed.executableAfter - 1)])).message).toMatch(/before its timelock/);
+    const done = Projection.replay([...upTo(33), exec(proposed.executableAfter)]).governance;
+    expect(done.pendingUpgrade).toBeNull();
+    expect(done.upgrades).toEqual([{ wasmHash: proposed.wasmHash, ledger: evs[33]!.ledger }]);
+    expect(faultOf(() => Projection.replay([...upTo(31), exec(proposed.executableAfter)])).message).toMatch(/never proposed/);
+  });
+
+  it("admin rotation: learned from events and checked from then on", () => {
+    const g = Projection.replay(upTo(30)).governance;
+    expect(g.admin).toBe(evs[29]!.data["admin"]);
+    expect(g.pendingAdmin).toBeNull();
+    const forged = clone(evs[28]!, { id: "9".repeat(19) + "-0000000005", data: { admin: evs[0]!.data["controller"]! } });
+    expect(faultOf(() => Projection.replay([...upTo(30), forged])).message).toMatch(/not the indexed admin/);
   });
 });

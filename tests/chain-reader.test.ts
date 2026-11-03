@@ -13,7 +13,7 @@ class RecordedCaller implements ContractCaller {
   calls: string[] = [];
   constructor(private readonly override: Record<string, xdr.ScVal> = {}) {}
   async call(fn: string, args: xdr.ScVal[]) {
-    const key = `${fn}(${String(scValToNative(args[0]!))})`;
+    const key = `${fn}(${args.length ? String(scValToNative(args[0]!)) : ""})`;
     this.calls.push(key);
     const hit = this.override[key] ?? (views[key] ? sc(key) : null);
     if (!hit) throw new Error(`no recorded value for ${key}`);
@@ -24,7 +24,7 @@ class RecordedCaller implements ContractCaller {
 describe("ContractChainReader on the contract's real view results", () => {
   const reader = new ContractChainReader(new RecordedCaller());
   it("decodes get_totals", async () => {
-    expect(await reader.getTotals("1")).toEqual({ funded: 1000n, reserved: 100n, claimed: 600n, withdrawn: 300n });
+    expect(await reader.getTotals("1")).toEqual({ funded: 1200n, reserved: 100n, claimed: 650n, withdrawn: 300n });
   });
   it("decodes get_right including the unit-enum state", async () => {
     const r1 = await reader.getRightOwner("1");
@@ -33,10 +33,21 @@ describe("ContractChainReader on the contract's real view results", () => {
     expect(r2.claimed).toBe(false);
     expect(r2.owner).toMatch(/^[GC][A-Z2-7]{55}$/);
   });
+  it("decodes get_pool (status enum, rotated controller) and get_governance", async () => {
+    expect(await reader.getPool("1")).toMatchObject({ status: "Closed" });
+    expect((await reader.getPool("1")).controller).toMatch(/^[GC][A-Z2-7]{55}$/);
+    expect(await reader.getPool("2")).toMatchObject({ status: "Active" });
+    const g = await reader.getGovernance();
+    expect(g).toMatchObject({ pendingUpgrade: null, upgradesLocked: true });
+    expect(g.admin).toMatch(/^[GC][A-Z2-7]{55}$/);
+  });
   it("rejects malformed contract output instead of guessing", async () => {
     const bad = new ContractChainReader(new RecordedCaller({ "get_totals(1)": nativeToScVal({ funded: 1 }) , "get_right(1)": nativeToScVal(7, { type: "u32" }) }));
     await expect(bad.getTotals("1")).rejects.toThrow();
     await expect(bad.getRightOwner("1")).rejects.toThrow();
+    const bad2 = new ContractChainReader(new RecordedCaller({ "get_pool(1)": nativeToScVal({ status: "Gone" }), "get_governance()": nativeToScVal({ admin: 1 }) }));
+    await expect(bad2.getPool("1")).rejects.toThrow();
+    await expect(bad2.getGovernance()).rejects.toThrow();
   });
   it("placeholder simulation account is a valid public key", () => {
     expect(StrKey.isValidEd25519PublicKey(ZERO_ACCOUNT)).toBe(true);

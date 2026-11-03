@@ -184,6 +184,17 @@ export class Indexer {
       if (chain.owner !== r.owner) add(`right ${r.rightId} owner: chain ${chain.owner} != indexed ${r.owner}`);
       if (chain.claimed !== (r.state === "Claimed")) add(`right ${r.rightId} claimed flag differs from chain`);
     }
+    for (const p of this.projection.pools.values()) {
+      const chain = await reader.getPool(p.poolId);
+      if (chain.status !== p.status) add(`pool ${p.poolId} status: chain ${chain.status} != indexed ${p.status}`);
+      if (chain.controller !== p.controller) add(`pool ${p.poolId} controller: chain ${chain.controller} != indexed ${p.controller}`);
+    }
+    const g = this.projection.governance;
+    const chainG = await reader.getGovernance();
+    if (chainG.upgradesLocked !== g.upgradesLocked) add(`upgradesLocked: chain ${chainG.upgradesLocked} != indexed ${g.upgradesLocked}`);
+    if (chainG.pendingUpgrade !== (g.pendingUpgrade?.wasmHash ?? null)) add(`pending upgrade: chain ${chainG.pendingUpgrade} != indexed ${g.pendingUpgrade?.wasmHash ?? null}`);
+    // The constructor emits no event: the admin is only comparable once an admin event was seen.
+    if (g.admin !== null && chainG.admin !== g.admin) add(`admin: chain ${chainG.admin} != indexed ${g.admin}`);
     if (found.length > 0) {
       this.state.faults.push(...found);
       this.store.save(this.state);

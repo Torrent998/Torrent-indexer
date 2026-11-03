@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { SqliteStateStore } from "../src/indexer/sqlite-store.js";
-import { FakeLedgerSource, LAST_LEDGER, makeIndexer, streamEvents } from "./helpers/fake-ledger.js";
+import { FakeLedgerSource, LAST_LEDGER, STREAM_LEN, makeIndexer, streamEvents } from "./helpers/fake-ledger.js";
 
 const dirs: string[] = [];
 afterEach(() => dirs.splice(0).forEach((d) => rmSync(d, { recursive: true, force: true })));
@@ -83,6 +83,6 @@ describe("SqliteStateStore", () => {
     ix.resetForReplay();
     expect(store.load()!.events).toHaveLength(0);
     await ix.catchUp();
-    expect(store.load()!.events).toHaveLength(14);
+    expect(store.load()!.events).toHaveLength(STREAM_LEN);
   });
 });

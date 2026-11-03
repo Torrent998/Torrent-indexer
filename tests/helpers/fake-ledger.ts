@@ -20,7 +20,7 @@ interface StreamFile {
   events: { step: string; ledger: number; closeTime: number; eventIndex: number; topics: string[]; value: string }[];
 }
 
-export const stream: StreamFile = JSON.parse(readFileSync(new URL("../../fixtures/contract-stream.v1.json", import.meta.url), "utf8"));
+export const stream: StreamFile = JSON.parse(readFileSync(new URL("../../fixtures/contract-stream.v2.json", import.meta.url), "utf8"));
 
 export function eventId(ledger: number, index: number): string {
   const toid = (BigInt(ledger) << 32n) | 4096n;
@@ -40,6 +40,9 @@ export function streamEvents(): RawChainEvent[] {
     inSuccessfulContractCall: true,
   }));
 }
+
+/** Number of real events in the recorded stream. */
+export const STREAM_LEN = stream.events.length;
 
 export const LAST_LEDGER = Math.max(...stream.events.map((e) => e.ledger));
 
@@ -127,8 +130,16 @@ export class FakeChainReader implements ChainStateReader {
   async getTotals(poolId: string): Promise<Totals> {
     return this.totals.get(poolId) ?? { funded: 0n, reserved: 0n, claimed: 0n, withdrawn: 0n };
   }
+  pools = new Map<string, { status: "Active" | "Paused" | "Closed"; controller: string }>();
+  governance: { admin: string; pendingUpgrade: string | null; upgradesLocked: boolean } = { admin: "?", pendingUpgrade: null, upgradesLocked: false };
   async getRightOwner(rightId: string) {
     return this.owners.get(rightId) ?? { owner: "?", claimed: false };
+  }
+  async getPool(poolId: string) {
+    return this.pools.get(poolId) ?? { status: "Active" as const, controller: "?" };
+  }
+  async getGovernance() {
+    return this.governance;
   }
 }
 

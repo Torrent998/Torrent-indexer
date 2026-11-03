@@ -1,13 +1,15 @@
 {
   "schema": "torrent.contract-events",
-  "abiVersion": 1,
+  "abiVersion": 2,
   "notes": [
     "topics[0] is the event name symbol; remaining listed topics follow in order; data is a map of the listed fields",
     "network_id = sha256(network passphrase); consumers MUST reject events whose network_id is not the configured network (fail closed)",
     "the emitting contract id is the Soroban event envelope contractId, not a field",
     "i128 amounts are integer base units, serialized as decimal strings by torrent-indexer",
     "u64 ids are opaque to clients",
-    "spec names pool_created/funded/right_issued/transfer_proposed/transfer_completed/right_claimed/pool_paused from STELLAR_PROTOCOL.md; member_joined, transfer_cancelled, unreserved_withdrawn, pool_unpaused are additive in v1"
+    "spec names pool_created/funded/right_issued/transfer_proposed/transfer_completed/right_claimed/pool_paused from STELLAR_PROTOCOL.md; member_joined, transfer_cancelled, unreserved_withdrawn, pool_unpaused are additive",
+    "v2 adds pool_closed, member_removed, member_left, controller_proposed, controller_changed and the contract-level (no id topic) admin_proposed, admin_changed, upgrade_proposed, upgrade_cancelled, contract_upgraded, upgrades_locked",
+    "v2: every transfer status change is evented; an expired proposal replaced by a new one and an open proposal voided by a claim both emit transfer_cancelled (before transfer_proposed / right_claimed in the same transaction)"
   ],
   "events": [
     {
@@ -135,6 +137,107 @@
       "topics": [
         "pool_id"
       ],
+      "data": {
+        "network_id": "bytes32"
+      }
+    },
+    {
+      "name": "pool_closed",
+      "topics": [
+        "pool_id"
+      ],
+      "data": {
+        "network_id": "bytes32"
+      }
+    },
+    {
+      "name": "member_removed",
+      "topics": [
+        "pool_id"
+      ],
+      "data": {
+        "network_id": "bytes32",
+        "member": "address"
+      }
+    },
+    {
+      "name": "member_left",
+      "topics": [
+        "pool_id"
+      ],
+      "data": {
+        "network_id": "bytes32",
+        "member": "address"
+      }
+    },
+    {
+      "name": "controller_proposed",
+      "topics": [
+        "pool_id"
+      ],
+      "data": {
+        "network_id": "bytes32",
+        "controller": "address",
+        "proposed": "address"
+      }
+    },
+    {
+      "name": "controller_changed",
+      "topics": [
+        "pool_id"
+      ],
+      "data": {
+        "network_id": "bytes32",
+        "previous": "address",
+        "controller": "address"
+      }
+    },
+    {
+      "name": "admin_proposed",
+      "topics": [],
+      "data": {
+        "network_id": "bytes32",
+        "admin": "address",
+        "proposed": "address"
+      }
+    },
+    {
+      "name": "admin_changed",
+      "topics": [],
+      "data": {
+        "network_id": "bytes32",
+        "previous": "address",
+        "admin": "address"
+      }
+    },
+    {
+      "name": "upgrade_proposed",
+      "topics": [],
+      "data": {
+        "network_id": "bytes32",
+        "wasm_hash": "bytes32",
+        "executable_after": "u64"
+      }
+    },
+    {
+      "name": "upgrade_cancelled",
+      "topics": [],
+      "data": {
+        "network_id": "bytes32",
+        "wasm_hash": "bytes32"
+      }
+    },
+    {
+      "name": "contract_upgraded",
+      "topics": [],
+      "data": {
+        "network_id": "bytes32",
+        "wasm_hash": "bytes32"
+      }
+    },
+    {
+      "name": "upgrades_locked",
+      "topics": [],
       "data": {
         "network_id": "bytes32"
       }

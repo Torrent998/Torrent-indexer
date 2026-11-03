@@ -16,7 +16,7 @@ const toBig = (v: unknown, what: string): bigint => {
 
 /**
  * Reads authoritative state from the escrow contract's view functions (`get_totals`, `get_right`).
- * Decoding is tested on the contract's real recorded return values (fixtures/contract-stream.v1.json).
+ * Decoding is tested on the contract's real recorded return values (fixtures/contract-stream.v2.json).
  */
 export class ContractChainReader implements ChainStateReader {
   constructor(private readonly caller: ContractCaller) {}
@@ -27,6 +27,21 @@ export class ContractChainReader implements ChainStateReader {
       funded: toBig(v["funded"], "funded"), reserved: toBig(v["reserved"], "reserved"),
       claimed: toBig(v["claimed"], "claimed"), withdrawn: toBig(v["withdrawn"], "withdrawn"),
     };
+  }
+
+  async getPool(poolId: string): Promise<{ status: "Active" | "Paused" | "Closed"; controller: string }> {
+    const v = scValToNative(await this.caller.call("get_pool", [nativeToScVal(BigInt(poolId), { type: "u64" })])) as Record<string, unknown>;
+    const status = Array.isArray(v["status"]) ? v["status"][0] : v["status"];
+    if (typeof v["controller"] !== "string" || (status !== "Active" && status !== "Paused" && status !== "Closed")) throw new Error("unexpected get_pool shape");
+    return { status, controller: v["controller"] };
+  }
+
+  async getGovernance(): Promise<{ admin: string; pendingUpgrade: string | null; upgradesLocked: boolean }> {
+    const v = scValToNative(await this.caller.call("get_governance", [])) as Record<string, unknown>;
+    const pending = v["pending_upgrade"];
+    if (typeof v["admin"] !== "string" || typeof v["upgrades_locked"] !== "boolean") throw new Error("unexpected get_governance shape");
+    if (pending !== null && pending !== undefined && !(pending instanceof Uint8Array && pending.length === 32)) throw new Error("unexpected pending_upgrade");
+    return { admin: v["admin"], upgradesLocked: v["upgrades_locked"], pendingUpgrade: pending instanceof Uint8Array ? Buffer.from(pending).toString("hex") : null };
   }
 
   async getRightOwner(rightId: string): Promise<{ owner: string; claimed: boolean }> {

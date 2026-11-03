@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { Indexer } from "../indexer/indexer.js";
 import { SCHEMA_VERSION, SOURCE_REPO, type IndexedEvent } from "../types/index.js";
 import { EVENT_ID_RE } from "../ledger/decode.js";
+import { ABI_VERSION } from "../ledger/spec.js";
 
 /** Reconciliation event contract (docs/ARCHITECTURE.md). */
 export const reconciliationEventSchema = z.object({
@@ -47,7 +48,8 @@ const query = z.object({
 function entityRef(e: IndexedEvent): string {
   if (e.refs.transferId) return `transfer:${e.refs.transferId}`;
   if (e.refs.rightId) return `right:${e.refs.rightId}`;
-  return `pool:${e.refs.poolId ?? "?"}`;
+  if (e.refs.poolId) return `pool:${e.refs.poolId}`;
+  return `contract:${e.contractId}`; // v2 governance events carry no id topic
 }
 
 export function toLedgerEvent(ix: Indexer, e: IndexedEvent) {
@@ -95,6 +97,16 @@ export function handle(ix: Indexer, req: IncomingMessage, res: ServerResponse): 
 
   if (path === "/healthz") return send(res, 200, { ok: true }, requestId);
   if (path === "/v1/status") return send(res, 200, ser(ix.info), requestId);
+  if (path === "/v1/contract") {
+    // Governance as derived from events. `admin` is null until an admin event is seen (the
+    // constructor emits none); the contract's get_governance is authoritative.
+    const g = m.governance;
+    return send(res, 200, ser({
+      contractId: ix.info.contractId, abiVersion: ABI_VERSION, admin: g.admin, pendingAdmin: g.pendingAdmin,
+      pendingUpgrade: g.pendingUpgrade, upgradesLocked: g.upgradesLocked, upgrades: g.upgrades,
+      indexerStatus: ix.status, latestObservedLedger: ix.info.latestObservedLedger,
+    }), requestId);
+  }
 
   if (path === "/v1/ledger/events") {
     const q = query.safeParse(Object.fromEntries(url.searchParams));

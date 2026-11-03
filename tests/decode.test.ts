@@ -26,6 +26,11 @@ describe("decodeEvent against REAL contract events", () => {
       "pool_created", "member_joined", "member_joined", "funded", "right_issued",
       "transfer_proposed", "transfer_completed", "right_claimed", "right_issued",
       "transfer_proposed", "transfer_cancelled", "unreserved_withdrawn", "pool_paused", "pool_unpaused",
+      // v2
+      "funded", "right_issued", "transfer_proposed", "transfer_cancelled", "transfer_proposed",
+      "transfer_cancelled", "right_claimed", "member_left", "controller_proposed", "controller_changed",
+      "pool_closed", "pool_created", "member_joined", "member_removed", "admin_proposed", "admin_changed",
+      "upgrade_proposed", "upgrade_cancelled", "upgrade_proposed", "upgrade_cancelled", "upgrades_locked",
     ]);
     const funded = evs[3]!;
     expect(funded.refs).toEqual({ poolId: "1" });
@@ -82,5 +87,25 @@ describe("decodeEvent against REAL contract events", () => {
     const r = raws[3]!;
     expect(code(() => decodeEvent({ ...r, topics: [] }, cfg, at))).toBe("SCHEMA_MISMATCH");
     expect(code(() => decodeEvent({ ...r, value: nativeToScVal(1, { type: "u32" }) }, cfg, at))).toBe("SCHEMA_MISMATCH");
+  });
+});
+
+describe("contract_upgraded (not in the recorded stream: executing an upgrade needs real wasm)", () => {
+  const raws = streamEvents();
+  // upgrade_cancelled has exactly contract_upgraded's shape ({network_id, wasm_hash}, no id topic);
+  // reuse its real payload bytes and change only the name symbol.
+  const cancelled = raws.find((r) => scValToNative(r.topics[0]!) === "upgrade_cancelled")!;
+  const upgraded = { ...cancelled, topics: [nativeToScVal("contract_upgraded", { type: "symbol" })] };
+
+  it("decodes with no id refs and the wasm hash as hex", () => {
+    const e = decodeEvent(upgraded, cfg, at);
+    expect(e.name).toBe("contract_upgraded");
+    expect(e.refs).toEqual({});
+    expect(e.data["wasm_hash"]).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("rejects an id topic on a contract-level event", () => {
+    const withTopic = { ...upgraded, topics: [...upgraded.topics, nativeToScVal(1n, { type: "u64" })] };
+    expect(code(() => decodeEvent(withTopic, cfg, at))).toBe("SCHEMA_MISMATCH");
   });
 });

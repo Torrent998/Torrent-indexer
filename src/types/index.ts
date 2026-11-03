@@ -15,7 +15,18 @@ export type EventName =
   | "right_claimed"
   | "unreserved_withdrawn"
   | "pool_paused"
-  | "pool_unpaused";
+  | "pool_unpaused"
+  | "pool_closed"
+  | "member_removed"
+  | "member_left"
+  | "controller_proposed"
+  | "controller_changed"
+  | "admin_proposed"
+  | "admin_changed"
+  | "upgrade_proposed"
+  | "upgrade_cancelled"
+  | "contract_upgraded"
+  | "upgrades_locked";
 
 /** A Soroban contract event exactly as delivered by the ledger source (undecoded). */
 export interface RawChainEvent {
@@ -78,6 +89,10 @@ export interface LedgerSource {
 export interface ChainStateReader {
   getTotals(poolId: string): Promise<Totals>;
   getRightOwner(rightId: string): Promise<{ owner: string; claimed: boolean }>;
+  /** `get_pool` (ABI v2): lifecycle status and current controller. */
+  getPool(poolId: string): Promise<{ status: "Active" | "Paused" | "Closed"; controller: string }>;
+  /** `get_governance` (ABI v2). */
+  getGovernance(): Promise<{ admin: string; pendingUpgrade: string | null; upgradesLocked: boolean }>;
 }
 
 export type FaultCode =
