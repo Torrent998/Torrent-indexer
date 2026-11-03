@@ -50,3 +50,20 @@ Each includes network, contract ID and opaque pool/right refs; never embed perso
 - double-claim and replay blocked;
 - no unexpected funds leave pool;
 - indexer catch-up after missed ledgers yields identical projection.
+
+## Implementation status (torrent-escrow ABI v2)
+The specification above is implemented by `torrent-escrow` ABI v2 (see torrent-contracts `bindings/abi.v2.json`,
+`bindings/events.v2.json` and ADRs 0001-0002). Mapping and deliberate differences:
+- `PoolConfig.status` is `Active | Paused | Closed`; `close_pool` is terminal and never blocks claims.
+- `Member` adds `open_rights`; `remove_member` (controller, before first funding only) and `leave_pool` (member's own
+  signature, refused while owning an unclaimed right) are the only membership changes.
+- Rights are tradable only before maturity, and an offer's expiry may not exceed the right's maturity.
+- `Nonce(address, seq)` is not stored: Soroban authorization nonces plus single-use transfer ids and one-time claims
+  cover replay (tested). Revisit if off-chain signed approvals are introduced.
+- Upgrade policy: an admin set at deployment can only rotate itself (two-step) and propose (7-day on-chain timelock),
+  cancel, execute or permanently lock upgrades; it has no authority over pools, rights or tokens.
+- Additional events: `member_joined`, `transfer_cancelled` (also for replaced and claim-voided offers),
+  `unreserved_withdrawn`, `pool_unpaused`, `pool_closed`, `member_removed`, `member_left`, `controller_proposed`,
+  `controller_changed`, `admin_proposed`, `admin_changed`, `upgrade_proposed`, `upgrade_cancelled`,
+  `contract_upgraded`, `upgrades_locked`.
+- Consent-based rule amendments are not implemented yet. No Testnet deployment exists yet.
