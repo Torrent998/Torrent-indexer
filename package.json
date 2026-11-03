@@ -14,7 +14,7 @@
     "test": "vitest run",
     "check": "npm run typecheck && npm run lint && npm test",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/src/main.js"
+    "start": "node --env-file-if-exists=.env dist/src/main.js"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "17.4.0",
