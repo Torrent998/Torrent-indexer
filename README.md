@@ -20,14 +20,18 @@ Part of **Torrent** — ownership of *when* money becomes available.
 The indexer turns Soroban contract events into **canonical, ledger-derived read models** that the API and the
 web app trust instead of their own databases:
 
-- **Strict decoder** for Torrent-contracts ABI v1 events, tested on the **real** events recorded from the contract
-  (`fixtures/contract-stream.v1.json`).
-- **Deterministic projection** of pools, members, rights, transfers and totals, cross-checked against the
-  contract's own `get_totals` / `get_right`.
+- **Strict decoder** for all 22 Torrent-contracts **ABI v2** events, tested on the **real** events recorded from the
+  contract (`fixtures/contract-stream.v2.json`).
+- **Deterministic projection** of pools (Active / Paused / Closed, members, departed members, controller rotation),
+  rights, transfers, totals and contract governance (admin rotation, timelocked upgrades, upgrade lock). It refuses
+  streams that break the contract's rules (activity in a closed pool, an offer on a matured right, a member leaving
+  while owning a right, an upgrade executed before its timelock, a silent transfer status change).
+- **Reconciliation** against the contract's own `get_totals`, `get_right`, `get_pool` and `get_governance`.
 - **Durable cursor** with dedup, replay and backfill from the deployment ledger, reorg rollback and fail-closed
   faults; cursor commits atomically with events (SQLite, WAL).
 - **Read-only HTTP API**: `GET /v1/ledger/events?cursor=&limit=`, `/v1/pools/:id`, `/v1/pools/:id/rights`,
-  `/v1/rights/:id`, `/v1/transfers/:id`, `/v1/status`, `/healthz`. Schema snapshot:
+  `/v1/rights/:id`, `/v1/transfers/:id`, `/v1/contract` (governance: admin, pending upgrade and its timelock, lock),
+  `/v1/status`, `/healthz`. Schema snapshot:
   [`generated/ledger-events.schema.json`](./generated/ledger-events.schema.json).
 
 ## Quickstart
@@ -51,14 +55,15 @@ Stop with Ctrl-C/SIGTERM: the in-flight tick finishes, then the process exits.
 
 | Area | State |
 |---|---|
-| ABI v1 event decoder (table-driven, strict) | implemented; tested on real recorded contract events |
-| Projection with cross-checks against contract-reported totals | implemented |
+| ABI v2 event decoder (table-driven, strict, 22 events) | implemented; tested on real recorded contract events (all but `contract_upgraded`, which is tested on the real bytes of the identically shaped `upgrade_cancelled`) |
+| Projection with cross-checks against contract-reported totals, v2 lifecycle and governance rules | implemented, failure paths tested |
+| Reconciliation of totals, owners, pool status, controller and governance | implemented; decoding tested on the contract's real recorded view results |
 | Cursor, dedup, durable store, replay/backfill, reorg rollback, fail-closed faults, reconciliation | implemented, failure paths tested |
 | Read-only HTTP API + JSON Schema snapshot | implemented |
 | `SorobanRpcSource` (live RPC adapter) | compiles; **never run against live Testnet** (no deployment exists) |
 | RPC-backed reconciliation via `simulateTransaction` | decoding tested on real recorded return values; never run live |
 | Storage | SQLite (`node:sqlite`, experimental in Node 22); a JSON store remains for tests |
-| Tests | 67 passing; `tests/helpers/fake-ledger.ts` is a labelled **TEST ADAPTER** that replays recorded events |
+| Tests | 78 passing; `tests/helpers/fake-ledger.ts` is a labelled **TEST ADAPTER** that replays recorded events |
 | Production use / Mainnet | **no** / **no** |
 
 Design record: [docs/adr/0001-indexer-design.md](./docs/adr/0001-indexer-design.md).

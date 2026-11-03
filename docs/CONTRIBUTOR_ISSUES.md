@@ -44,6 +44,14 @@ Sizes: small (a day or two), medium (up to a week), large (more, usually with an
 - **Size:** large
 - **Non-goals:** Dropping SQLite.
 
+## 6. Read the admin at the deployment ledger
+
+- **Motivation:** The contract constructor emits no event, so `/v1/contract` reports `admin: null` until the first admin rotation.
+- **Touches:** `src/rpc`, `src/indexer/indexer.ts`
+- **Acceptance:** On first start the indexer reads `get_governance` once (via the existing `ContractCaller`), stores it with the ledger it was read at, and the projection treats it as the starting admin; tests use recorded view results.
+- **Size:** small
+- **Non-goals:** Changing the contract.
+
 ## Already done
 
-Earlier items on this list (cross-repo schemas and golden fixtures, per-repo CI, the intent state machine and reconciliation, coverage-invariant and double-claim property tests, transfer authorization, and indexer replay/backfill) are implemented; see each repository's README status table.
+Earlier items on this list (cross-repo schemas and golden fixtures, per-repo CI, the intent state machine and reconciliation, coverage-invariant and double-claim property tests, transfer authorization, indexer replay/backfill, and the ABI v2 decoder, lifecycle/governance projection and reconciliation) are implemented; see each repository's README status table.
