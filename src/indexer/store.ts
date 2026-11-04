@@ -65,7 +65,7 @@ export class FileStateStore implements StateStore {
     mkdirSync(dirname(this.path), { recursive: true });
     const tmp = `${this.path}.tmp`;
     writeFileSync(tmp, JSON.stringify(state));
-    const fd = openSync(tmp, "r");
+    const fd = openSync(tmp, "r+");
     try {
       fsyncSync(fd);
     } finally {

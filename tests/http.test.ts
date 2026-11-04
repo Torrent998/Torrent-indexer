@@ -141,6 +141,6 @@ describe("example responses (consumed by torrent-api contract tests)", () => {
       ) + "\n";
     const path = new URL("../generated/api-examples.v1.json", import.meta.url);
     if (process.env["UPDATE_GOLDEN"]) writeFileSync(path, doc);
-    expect(readFileSync(path, "utf8")).toBe(doc);
+    expect(readFileSync(path, "utf8").replace(/\r\n/g, "\n")).toBe(doc);
   });
 });

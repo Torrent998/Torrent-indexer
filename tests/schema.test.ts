@@ -21,6 +21,6 @@ describe("generated JSON Schema snapshot", () => {
   const path = new URL("../generated/ledger-events.schema.json", import.meta.url);
   it("matches the committed file (schema changes need a version decision)", () => {
     if (process.env["UPDATE_GOLDEN"]) writeFileSync(path, doc());
-    expect(readFileSync(path, "utf8")).toBe(doc());
+    expect(readFileSync(path, "utf8").replace(/\r\n/g, "\n")).toBe(doc());
   });
 });
