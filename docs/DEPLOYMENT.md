@@ -32,3 +32,15 @@ LOG_LEVEL=info
 - Never republish user transactions solely because a client request timed out.
 - Test signing-key rotation, dependency outages, stale quotes, malicious user input, insufficient balances and duplicate delivery.
 - External reference infrastructure may change; check upstream project versions and licenses at build time.
+
+## Live run against Testnet (2026-11-04)
+
+Config: `TORRENT_ESCROW_CONTRACT_ID=CBWF73FUJDGXSXOYUVYHP3XAFSPZWX65YGFSXDSSF5VRFLEWFFTQUIJG`, `CHAIN_START_LEDGER=5553711`, `PORT=4002`
+(the workspace also runs other services on 3000-3002), `POLL_MS=5000`, `RECONCILE_EVERY_TICKS=60`.
+
+Observed after the contract's smoke run and the API live runs (see `Torrent-contracts/docs/DEPLOYMENT.md`):
+- `GET /v1/status`: `SYNCED`, `lagLedgers 0`, `reorgCount 0`, `faults []`.
+- Every event kind the contract emitted during the smoke lifecycle was ingested (pool_created, member_joined, funded, right_issued, transfer_proposed, transfer_completed, right_claimed, member_left, controller_proposed, controller_changed, pool_closed, unreserved_withdrawn).
+- Smoke pool 8: the indexer's totals (`funded 10000000, claimed 6000000, withdrawn 4000000, reserved 0`) equal the contract's own `get_totals` read directly from the chain, status `Closed`, coverage fully backed.
+- Reconciliation ran on its schedule (every 60 ticks, about 5 minutes) with no fault recorded. I did not force a drift to watch it trip; that path is covered by the unit tests only.
+- `GET /v1/contract` returns ABI 2 with `admin: null`: the constructor emits no event, so the admin stays unknown to the indexer until the first admin rotation. This is a known gap (contract change + redeploy), not fixed.
