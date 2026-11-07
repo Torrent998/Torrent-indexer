@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Documentation integrity check: required community files exist and every relative markdown link resolves.
 // Run in CI (.github/workflows/docs.yml) and locally: node scripts/check-docs.mjs
+/* global console, process */
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, normalize } from 'node:path';
