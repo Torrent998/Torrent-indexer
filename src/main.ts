@@ -25,7 +25,7 @@ const log: Logger = {
 
 const network = env("STELLAR_NETWORK", "testnet");
 if (network !== "testnet" && process.env["ALLOW_NON_TESTNET"] !== "1") {
-  throw new Error("MVP is Testnet-only; set ALLOW_NON_TESTNET=1 only after the go-live review in docs/PROJECT_MASTER.md");
+  throw new Error("MVP is Testnet-only; set ALLOW_NON_TESTNET=1 only after the go-live review in docs/SECURITY.md");
 }
 const contractId = env("TORRENT_ESCROW_CONTRACT_ID");
 const cfg = {

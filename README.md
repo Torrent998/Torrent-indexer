@@ -4,89 +4,49 @@
 
 # Torrent-indexer
 
-**Ledger-derived state for Torrent: Soroban event ingestion, replay and reconciliation.**
+**Ledger-derived read models for Torrent: pools, payout rights and transfers rebuilt from Soroban contract events.**
 
 [![CI](https://github.com/Torrent998/Torrent-indexer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Torrent998/Torrent-indexer/actions/workflows/ci.yml)
+[![Docs](https://github.com/Torrent998/Torrent-indexer/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/Torrent998/Torrent-indexer/actions/workflows/docs.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-42DEB4.svg)](./LICENSE)
 [![Network: Stellar Testnet](https://img.shields.io/badge/network-Stellar%20Testnet-00191C.svg)](#status)
-[![Status: prototype, unaudited](https://img.shields.io/badge/status-prototype%2C%20unaudited-A5F9DE.svg)](#status)
+[![Status: prototype, unaudited](https://img.shields.io/badge/status-prototype%2C%20unaudited-A5F9DE.svg)](#security)
+[![TypeScript](https://img.shields.io/badge/typescript-node%2022-3178c6.svg)](./package.json)
 
-Part of **Torrent** — ownership of *when* money becomes available.
+[Live app](https://torrent-web1.vercel.app) · [Docs](https://github.com/Torrent998/Torrent-web/tree/main/gitbook) · [Quick start](#quick-start) · [Live status](https://torrent-indexer.onrender.com/v1/status) · [Architecture](./docs/ARCHITECTURE.md) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
-## This repository
+---
 
-The indexer turns Soroban contract events into **canonical, ledger-derived read models** that the API and the
-web app trust instead of their own databases:
+## What this is
 
-- **Strict decoder** for all 22 Torrent-contracts **ABI v2** events, tested on the **real** events recorded from the
-  contract (`fixtures/contract-stream.v2.json`).
-- **Deterministic projection** of pools (Active / Paused / Closed, members, departed members, controller rotation),
-  rights, transfers, totals and contract governance (admin rotation, timelocked upgrades, upgrade lock). It refuses
-  streams that break the contract's rules (activity in a closed pool, an offer on a matured right, a member leaving
-  while owning a right, an upgrade executed before its timelock, a silent transfer status change).
-- **Reconciliation** against the contract's own `get_totals`, `get_right`, `get_pool` and `get_governance`.
-- **Durable cursor** with dedup, replay and backfill from the deployment ledger, reorg rollback and fail-closed
-  faults; cursor commits atomically with events (SQLite, WAL).
-- **Read-only HTTP API**: `GET /v1/ledger/events?cursor=&limit=`, `/v1/pools/:id`, `/v1/pools/:id/rights`,
-  `/v1/rights/:id`, `/v1/transfers/:id`, `/v1/contract` (governance: admin, pending upgrade and its timelock, lock),
-  `/v1/status`, `/healthz`. Schema snapshot:
-  [`generated/ledger-events.schema.json`](./generated/ledger-events.schema.json).
-
-## Quickstart
-
-Requires Node.js 22.12 or newer.
-
-```bash
-git clone https://github.com/Torrent998/Torrent-indexer && cd Torrent-indexer
-npm ci
-npm run check            # typecheck + eslint + vitest
-npm run build
-cp .env.example .env     # set TORRENT_ESCROW_CONTRACT_ID and CHAIN_START_LEDGER after a Testnet deployment
-npm start                # http://localhost:3002  (/healthz, /v1/status)
-```
-
-`npm start` loads `.env` when present and refuses to start without the required settings or on a non-Testnet
-network (unless `ALLOW_NON_TESTNET=1`). State is SQLite at `DATABASE_PATH` (default `data/indexer.db`, git-ignored).
-Stop with Ctrl-C/SIGTERM: the in-flight tick finishes, then the process exits.
+Torrent lets savings-circle members trade the timing of a payout, but only for payouts that are already fully funded. The money and the rules live in a Soroban
+contract. The indexer reads that contract's events from Stellar RPC and rebuilds, deterministically, what is true on the ledger: which pools exist, who owns which
+payout right, which transfers are open, and how much is funded, reserved and claimed. The API and the web app trust this read model instead of their own databases,
+and the indexer refuses any event stream that breaks the contract's rules.
 
 ## Status
 
+Torrent is a **Testnet prototype with synthetic funds. It has not been audited.**
+
 | Area | State |
 |---|---|
-| ABI v2 event decoder (table-driven, strict, 22 events) | implemented; tested on real recorded contract events (all but `contract_upgraded`, which is tested on the real bytes of the identically shaped `upgrade_cancelled`) |
-| Projection with cross-checks against contract-reported totals, v2 lifecycle and governance rules | implemented, failure paths tested |
-| Reconciliation of totals, owners, pool status, controller and governance | implemented; decoding tested on the contract's real recorded view results |
-| Cursor, dedup, durable store, replay/backfill, reorg rollback, fail-closed faults, reconciliation | implemented, failure paths tested |
-| Read-only HTTP API + JSON Schema snapshot | implemented |
-| `SorobanRpcSource` (live RPC adapter) | compiles; **never run against live Testnet** (no deployment exists) |
-| RPC-backed reconciliation via `simulateTransaction` | decoding tested on real recorded return values; never run live |
-| Storage | SQLite (`node:sqlite`, experimental in Node 22); a JSON store remains for tests |
-| Tests | 78 passing; `tests/helpers/fake-ledger.ts` is a labelled **TEST ADAPTER** that replays recorded events |
-| Production use / Mainnet | **no** / **no** |
+| Strict decoder for all 22 ABI v2 events | implemented, tested on the real events recorded from the contract (`fixtures/contract-stream.v2.json`) |
+| Deterministic projection of pools, members, rights, transfers, totals and governance | implemented; it rejects activity in a closed pool, an offer on a matured right, a member leaving while owning a right, an upgrade before its timelock |
+| Reconciliation against the contract's own `get_totals`, `get_right`, `get_pool`, `get_governance` | implemented; ran on its schedule against Testnet with no fault. A forced drift was **not** exercised live, only in unit tests |
+| Durable cursor, dedup, replay and backfill, reorg rollback, fail-closed faults | implemented, failure paths tested (SQLite in WAL mode, cursor committed atomically with events) |
+| Read-only HTTP API and JSON Schema snapshot | implemented |
+| Live on Stellar Testnet | **yes**: follows [`CBWF73FUJDGXSXOYUVYHP3XAFSPZWX65YGFSXDSSF5VRFLEWFFTQUIJG`](https://stellar.expert/explorer/testnet/contract/CBWF73FUJDGXSXOYUVYHP3XAFSPZWX65YGFSXDSSF5VRFLEWFFTQUIJG) from ledger 5553711. Hosted at [torrent-indexer.onrender.com](https://torrent-indexer.onrender.com/v1/status) (Render free plan: it sleeps when idle and the first request can take 50 seconds or more) |
+| Observed on Testnet | `SYNCED`, 54 events ingested, `reorgCount 0`, no faults. For the smoke pool the indexer's totals (`funded 10000000, claimed 6000000, withdrawn 4000000, reserved 0`) equal the contract's own `get_totals` |
+| Tests | 78 passing; `tests/helpers/fake-ledger.ts` is a labeled test adapter that replays recorded events |
+| Admin shown by `GET /v1/contract` | `null` until the first admin rotation: the contract constructor emits no event (a contract change, tracked as an open issue) |
+| Security audit, Mainnet, production use | **no**, **no**, **no** |
 
-Design record: [docs/adr/0001-indexer-design.md](./docs/adr/0001-indexer-design.md).
+## How it fits together
 
-## What is Torrent?
-
-In a savings circle, members contribute to a shared pot and take turns receiving it. Sometimes a member
-needs their payout earlier, or would happily take it later. **Torrent lets members exchange the timing of a
-payout, but only for payouts that are already fully funded.**
-
-1. **Create a circle.** An organizer sets the rules; their hash binds the circle to an on-chain pool.
-2. **Fund the pool.** Members deposit a supported Stellar asset into a Soroban escrow contract.
-3. **Issue payout rights.** Each right has a unique id, owner, amount and maturity. The contract refuses to
-   issue a right that is not covered by unreserved escrow.
-4. **Transfer or claim.** The owner proposes, the recipient accepts, both sign. At maturity the current owner
-   claims exactly once.
-
-The contract enforces one invariant after every call: `reserved <= funded - claimed - withdrawn`.
-A payout right never represents a future contribution that has not been paid.
-
-## Architecture
-
-Torrent is four independently tested repositories, each owning one boundary. The contract is the only source of truth for backing, ownership and payout; the indexer reconstructs that truth from the ledger; the API organizes people and signing requests; the web app shows it honestly.
+Torrent is four repositories, each owning one boundary. The contract is the only source of truth for backing, ownership and payout. This repository rebuilds that truth from
+the ledger so nothing else has to guess.
 
 ```mermaid
 flowchart LR
@@ -101,46 +61,106 @@ flowchart LR
 
 | Repository | Stack | Owns |
 |---|---|---|
-| [Torrent-contracts](https://github.com/Torrent998/Torrent-contracts) | Rust · Soroban SDK 29 | Escrow pools, fully backed payout rights, member-only transfers and one-time claims. The only writer of financial truth. |
-| **[Torrent-indexer](https://github.com/Torrent998/Torrent-indexer)** (this repo) | TypeScript · Node 22 · Stellar RPC | Ingests contract events with a durable cursor and rebuilds pools, rights and transfers from the ledger. |
-| [Torrent-api](https://github.com/Torrent998/Torrent-api) | TypeScript · NestJS · SQLite | Circles, invitations, wallet sign-in and the signing-request state machine. Holds no keys and no balances. |
-| [Torrent-web](https://github.com/Torrent998/Torrent-web) | TypeScript · Next.js 16 · Tailwind CSS 4 | Landing page and web app: circles, coverage, rights, transfers, claims and signing requests. |
+| [Torrent-contracts](https://github.com/Torrent998/Torrent-contracts) | Rust, Soroban SDK 29 | Escrow pools, fully backed payout rights, member-only transfers, one-time claims |
+| **[Torrent-indexer](https://github.com/Torrent998/Torrent-indexer)** (this repo) | TypeScript, Node 22, Stellar RPC | Event ingestion with a durable cursor and the read models |
+| [Torrent-api](https://github.com/Torrent998/Torrent-api) | TypeScript, NestJS, SQLite | Circles, invitations, wallet sign-in, the signing-request state machine |
+| [Torrent-web](https://github.com/Torrent998/Torrent-web) | TypeScript, Next.js 16, Tailwind CSS 4 | Landing page and app, Freighter wallet adapter |
 
-## Project documents
+## HTTP API (read-only)
 
-| Document | What it covers |
+| Route | Returns |
 |---|---|
-| [docs/PRD.md](./docs/PRD.md) | Product purpose, users, MVP and non-goals |
-| [docs/SRD.md](./docs/SRD.md) | Domain model, state machine, API surface |
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | The four repositories and how data flows between them |
-| [docs/STELLAR_PROTOCOL.md](./docs/STELLAR_PROTOCOL.md) | Contract specification and invariants |
-| [docs/SECURITY.md](./docs/SECURITY.md) | Threat model and go-live restrictions |
-| [docs/ROADMAP.md](./docs/ROADMAP.md) | Milestones and quality gates |
-| [docs/BRAND.md](./docs/BRAND.md) | Approved logo and interface principles |
-| [docs/adr/](./docs/adr/) | Architecture decision records for this repository |
-| [AGENTS.md](./AGENTS.md) | Rules for AI coding agents working in this repository |
+| `GET /v1/ledger/events?cursor=&limit=` | Ingested contract events, paginated by cursor |
+| `GET /v1/pools/:id`, `GET /v1/pools/:id/rights` | A pool with members and totals, and its payout rights |
+| `GET /v1/rights/:id`, `GET /v1/transfers/:id` | One right, one transfer |
+| `GET /v1/contract` | Governance: admin, pending upgrade and its timelock, upgrade lock, ABI version |
+| `GET /v1/status`, `GET /healthz` | Sync state (cursor, lag, reorg count, faults), liveness |
 
-The shared product documents are mirrored in all four repositories; the canonical copy lives in
-[Torrent-api](https://github.com/Torrent998/Torrent-api/tree/main/docs).
+The schema snapshot is in [`generated/ledger-events.schema.json`](./generated/ledger-events.schema.json) and the example responses in `generated/api-examples.v1.json`.
 
-## Contributing and Drips Wave
+## Tech stack
 
-Contributions are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md), then pick a scoped task from
-[docs/CONTRIBUTOR_ISSUES.md](./docs/CONTRIBUTOR_ISSUES.md). Each task names its motivation, the files it touches,
-acceptance tests and non-goals. Changes that cross a repository boundary go through the versioned fixtures
-each repo publishes, so every PR stays reviewable on its own.
+| Layer | Tools |
+|---|---|
+| Runtime | Node.js 22.12 or newer, TypeScript (strict), no framework |
+| Chain access | Stellar RPC (`getEvents`, `simulateTransaction`) |
+| Storage | SQLite through `node:sqlite` (experimental in Node 22), WAL mode; a JSON store remains for tests |
+| Tests | Vitest, recorded contract events as fixtures |
+| CI | GitHub Actions: lint, typecheck, tests, build, `npm audit --omit=dev --audit-level=high` |
 
-Torrent intends to apply to the [Drips Wave](https://docs.drips.network/wave/maintainers/participating-in-a-wave/)
-program for Stellar projects. Participation is subject to Drips' review; nothing here implies approval or rewards.
-Please follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+## Quick start
+
+Requires Node.js 22.12 or newer.
+
+```bash
+git clone https://github.com/Torrent998/Torrent-indexer && cd Torrent-indexer
+npm ci
+npm run check            # eslint, typecheck, vitest, build
+cp .env.example .env     # set TORRENT_ESCROW_CONTRACT_ID and CHAIN_START_LEDGER
+npm start                # http://localhost:3002  (/healthz, /v1/status)
+```
+
+For the Testnet contract, set `TORRENT_ESCROW_CONTRACT_ID=CBWF73FUJDGXSXOYUVYHP3XAFSPZWX65YGFSXDSSF5VRFLEWFFTQUIJG` and `CHAIN_START_LEDGER=5553711`.
+`npm start` loads `.env` when present and refuses to start without the required settings or on a non-Testnet network. State is SQLite at `DATABASE_PATH`
+(default `data/indexer.db`, git-ignored). Stop with Ctrl-C or SIGTERM: the tick in flight finishes, then the process exits.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `TORRENT_ESCROW_CONTRACT_ID` | none, required | Contract to follow |
+| `CHAIN_START_LEDGER` | `0` | Ledger to backfill from (use the deploy ledger) |
+| `STELLAR_RPC_URL` | `https://soroban-testnet.stellar.org` | Soroban RPC endpoint |
+| `POLL_MS` | `5000` | Poll interval |
+| `PAGE_SIZE` | `100` | Events per RPC page |
+| `CONFIRMATIONS` | `1` | Ledgers to wait before treating an event as final |
+| `RECONCILE_EVERY_TICKS` | `60` | Reconciliation period in ticks |
+| `DATABASE_PATH` | `data/indexer.db` | SQLite file |
+| `PORT` | `3002` | HTTP port |
+
+## Project structure
+
+```text
+src/ledger/      event decoder, projection (the rules it enforces), error types, ABI spec mirror
+src/indexer/     the tick loop with cursor, dedup and reorg handling; stores (SQLite and JSON)
+src/rpc/         Soroban RPC event source and the chain reader used for reconciliation
+src/http/        read-only HTTP server
+fixtures/        the contract's real recorded events, scenario and ABI mirror (ABI v2)
+generated/       JSON Schema and API example snapshots
+tests/           decoder, projection, reconciliation, store, HTTP, spec-mirror tests
+docs/            architecture, contract specification, security model, deployment notes, ADRs
+```
+
+Design record: [ADR 0001](./docs/adr/0001-indexer-design.md). Contract specification: [docs/STELLAR_PROTOCOL.md](./docs/STELLAR_PROTOCOL.md).
+
+## Contributing
+
+Contributions are welcome and Torrent takes part in the Stellar Wave program on Drips. Open, scoped tasks carry the
+[`Stellar Wave`](https://github.com/Torrent998/Torrent-indexer/issues?q=is%3Aissue+is%3Aopen+label%3A%22Stellar+Wave%22) label and one complexity label
+(`trivial`, `medium` or `high`). Read [CONTRIBUTING.md](./CONTRIBUTING.md) first. Fixtures change only from the contract's real event stream.
 
 ## Security
 
-Torrent is an **unaudited prototype for Stellar Testnet**. Do not use it with real funds.
-Please report vulnerabilities privately as described in [SECURITY.md](./SECURITY.md); do not open public issues
-for them. The threat model is in [docs/SECURITY.md](./docs/SECURITY.md).
+Unaudited prototype, Testnet only, synthetic funds only. Report vulnerabilities privately through GitHub's
+[private vulnerability reporting](https://github.com/Torrent998/Torrent-indexer/security/advisories/new) as described in [SECURITY.md](./SECURITY.md).
+The threat model is in [docs/SECURITY.md](./docs/SECURITY.md).
+
+## Community
+
+Questions and design discussion: [GitHub Discussions](https://github.com/Torrent998/Torrent-indexer/discussions).
+
+## Maintainers
+
+| Maintainer | Role | Link |
+|---|---|---|
+| Cjay | Maintainer, all four Torrent repositories | [@Cjay-Cyber-2](https://github.com/Cjay-Cyber-2) |
+
+Organization: [Torrent998](https://github.com/Torrent998).
+
+## Contributors
+
+<a href="https://github.com/Torrent998/Torrent-indexer/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Torrent998/Torrent-indexer" alt="Contributors" />
+</a>
 
 ## License
 
-[MIT](./LICENSE). The Torrent logo in [`brand/`](./brand/) is the project's approved identity and is shared by all four
-repositories; see [brand/README.md](./brand/README.md) for usage rules.
+[MIT](./LICENSE)

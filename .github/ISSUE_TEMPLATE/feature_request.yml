@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Torrent's financial rules come first: no unfunded payout rights, no state shown as settled before the
-        ledger confirms it, no secret keys in clients. Check [docs/CONTRIBUTOR_ISSUES.md](https://github.com/Torrent998/Torrent-indexer/blob/main/docs/CONTRIBUTOR_ISSUES.md) for scoped tasks first.
+        ledger confirms it, no secret keys in clients. Check the [open Stellar Wave issues](https://github.com/Torrent998/Torrent-indexer/issues?q=is%3Aissue+is%3Aopen+label%3A%22Stellar+Wave%22) first.
   - type: textarea
     id: problem
     attributes:

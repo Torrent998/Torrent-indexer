@@ -1,6 +1,6 @@
 # ADR 0001 — Event-log-first indexer with fail-closed halts
 
-Status: accepted (M1). Sources: `docs/ARCHITECTURE.md`, `docs/SRD.md` (ledger watchers, reconciliation event contract), `docs/TECHNICAL_BUILD.md`, and the contracts repo's ABI v1 (`fixtures/`). Specific docs win over the master index; the canonical doc set lives in `torrent-api`.
+Status: accepted (M1). Sources: `docs/ARCHITECTURE.md`, the product notes in the git history (ledger watchers, reconciliation event contract), the product notes in the git history, and the contracts repo's ABI v1 (`fixtures/`). Specific docs win over the master index; the canonical doc set lives in `torrent-api`.
 
 ## Decisions
 1. **The stored, ordered event log is the source of truth; the read model is a pure function of it** (`Projection.replay`). Rollback (reorg) and full rebuild are the same operation: truncate/reset the log, replay. Determinism is tested by comparing snapshots.
@@ -14,7 +14,7 @@ Status: accepted (M1). Sources: `docs/ARCHITECTURE.md`, `docs/SRD.md` (ledger wa
 9. ABI v2 lifecycle and governance (see torrent-contracts ADR 0002) are projected and checked: closed pools accept nothing new, removals only before funding, departures only without unclaimed rights, controller and admin rotation must match the pending proposal, upgrades must be proposed, unique, unlocked and past their timelock. The constructor emits no event, so the admin is unknown (`null`) until the first admin event; reconciliation compares it only once known.
 
 ## Limits / not done
-- `SorobanRpcSource` has never run against a live Testnet RPC here; RPC history retention (days) means old deployments need a ledger-archive source (not built).
+- `SorobanRpcSource` runs against the live Testnet contract (see the README status table); RPC history retention (days) means old deployments need a ledger-archive source (not built).
 - `SorobanSimulateCaller` (RPC reads for reconciliation) has not run live; decoding is tested on recorded real values.
 - Storage is SQLite (see `sqlite-store.ts`); no Postgres, no multi-process access.
 - Shorter-chain rewinds (tip moves backwards) are not detected; Stellar does not do this.

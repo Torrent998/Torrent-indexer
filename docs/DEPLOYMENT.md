@@ -3,7 +3,7 @@
 ## Environment boundaries
 - Local: deterministic Docker Compose services, Stellar local network/Testnet, synthetic users/fixtures.
 - Staging: separate database, bucket, API credentials, signing identities, Testnet assets/contracts, observability.
-- Production: requires security audit, real issuer/provider agreements and relevant jurisdictional legal/compliance review. Not included in preimplementation scaffold.
+- Production: requires security audit, real issuer/provider agreements and relevant jurisdictional legal/compliance review. Not included in this Testnet prototype.
 
 ## Suggested variables (non-secret examples only)
 ```dotenv

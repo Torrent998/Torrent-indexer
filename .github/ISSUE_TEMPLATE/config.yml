@@ -3,6 +3,6 @@ contact_links:
   - name: Report a security vulnerability
     url: https://github.com/Torrent998/Torrent-indexer/security/advisories/new
     about: Please report vulnerabilities privately, never in a public issue.
-  - name: Scoped contributor tasks
-    url: https://github.com/Torrent998/Torrent-indexer/blob/main/docs/CONTRIBUTOR_ISSUES.md
-    about: Tasks with acceptance tests, ready to pick up.
+  - name: Open Stellar Wave issues
+    url: https://github.com/Torrent998/Torrent-indexer/issues?q=is%3Aissue+is%3Aopen+label%3A%22Stellar+Wave%22
+    about: Scoped, labeled tasks with acceptance criteria, ready to pick up.
