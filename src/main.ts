@@ -38,7 +38,8 @@ const cfg = {
   maxCheckpoints: 256,
 };
 const source = new SorobanRpcSource(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId);
-const indexer = new Indexer(cfg, source, new SqliteStateStore(env("DATABASE_PATH", "data/indexer.db")), { now: () => new Date() }, log);
+const store = new SqliteStateStore(env("DATABASE_PATH", "data/indexer.db"));
+const indexer = new Indexer(cfg, source, store, { now: () => new Date() }, log);
 const server = createApp(indexer).listen(Number(env("PORT", "3002")), () => log.info("listening"));
 
 const reader = new ContractChainReader(new SorobanSimulateCaller(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId, cfg.networkPassphrase));
@@ -62,10 +63,18 @@ async function loop(): Promise<void> {
   }
 }
 const done = loop();
+let closed = false;
 for (const sig of ["SIGINT", "SIGTERM"] as const) {
   process.on(sig, () => {
+    if (stopping) return;
     stopping = true;
     server.close();
-    void done.then(() => process.exit(0));
+    void done.then(() => {
+      if (!closed) {
+        closed = true;
+        store.close();
+      }
+      process.exit(0);
+    });
   });
 }
