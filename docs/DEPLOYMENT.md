@@ -16,6 +16,7 @@ REDIS_URL=redis://localhost:6379
 API_BASE_URL=http://localhost:3001
 CHAIN_START_LEDGER=0
 LOG_LEVEL=info
+CORS_ALLOWED_ORIGIN=*
 ```
 - Credentials to sign on-chain go into a secure secret manager or hardware-backed user wallet, never into a public mobile/web bundle.
 - Signed store badge links are configured after actual publication; no fabricated App Store or Google Play app URLs.

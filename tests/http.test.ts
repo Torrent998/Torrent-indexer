@@ -117,6 +117,57 @@ describe("read models", () => {
     expect(body).toMatchObject({ status: "SYNCED", network: "testnet", eventCount: STREAM_LEN, lagLedgers: 5 - 5 });
     expect((await get("/healthz")).body).toEqual({ ok: true });
   });
+
+  it("includes configurable CORS headers on GET and responds 204 to OPTIONS preflight", async () => {
+    const getRes = await fetch(base + "/v1/status");
+    expect(getRes.status).toBe(200);
+    expect(getRes.headers.get("access-control-allow-origin")).toBe("*");
+    expect(getRes.headers.get("access-control-expose-headers")).toContain("X-Request-Id");
+    expect(getRes.headers.get("cache-control")).toBe("no-store");
+    expect(getRes.headers.get("x-request-id")).toBeTruthy();
+
+    const notFoundRes = await fetch(base + "/v1/nope");
+    expect(notFoundRes.status).toBe(404);
+    expect(notFoundRes.headers.get("access-control-allow-origin")).toBe("*");
+
+    const methodNotAllowedRes = await fetch(base + "/v1/pools/1", { method: "POST" });
+    expect(methodNotAllowedRes.status).toBe(405);
+    expect(methodNotAllowedRes.headers.get("access-control-allow-origin")).toBe("*");
+
+    const optRes = await fetch(base + "/v1/pools/1", { method: "OPTIONS" });
+    expect(optRes.status).toBe(204);
+    expect(optRes.headers.get("access-control-allow-origin")).toBe("*");
+    expect(optRes.headers.get("access-control-allow-methods")).toContain("GET");
+    expect(optRes.headers.get("access-control-allow-methods")).toContain("OPTIONS");
+    expect(optRes.headers.get("access-control-allow-headers")).toContain("X-Request-Id");
+
+    const prev = process.env["CORS_ALLOWED_ORIGIN"];
+    process.env["CORS_ALLOWED_ORIGIN"] = "https://torrent-web.example";
+    try {
+      const customGet = await fetch(base + "/healthz");
+      expect(customGet.headers.get("access-control-allow-origin")).toBe("https://torrent-web.example");
+      expect(customGet.headers.get("vary")).toContain("Origin");
+      const customOpt = await fetch(base + "/v1/status", { method: "OPTIONS" });
+      expect(customOpt.status).toBe(204);
+      expect(customOpt.headers.get("access-control-allow-origin")).toBe("https://torrent-web.example");
+      expect(customOpt.headers.get("vary")).toContain("Origin");
+    } finally {
+      if (prev === undefined) delete process.env["CORS_ALLOWED_ORIGIN"];
+      else process.env["CORS_ALLOWED_ORIGIN"] = prev;
+    }
+
+    const customServer = createApp(ix, { corsAllowedOrigin: "https://dashboard.torrent.example" }).listen(0);
+    await new Promise((r) => customServer.once("listening", r));
+    try {
+      const customBase = `http://127.0.0.1:${(customServer.address() as AddressInfo).port}`;
+      const explicitRes = await fetch(customBase + "/v1/status");
+      expect(explicitRes.headers.get("access-control-allow-origin")).toBe("https://dashboard.torrent.example");
+    } finally {
+      await new Promise((r) => customServer.close(() => r(undefined)));
+    }
+
+    expect(() => createApp(ix, { corsAllowedOrigin: "https://bad.example\r\nX-Injected: 1" })).toThrow(/CR or LF/);
+  });
 });
 
 describe("example responses (consumed by torrent-api contract tests)", () => {
