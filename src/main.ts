@@ -39,7 +39,7 @@ const cfg = {
 };
 const source = new SorobanRpcSource(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId);
 const indexer = new Indexer(cfg, source, new SqliteStateStore(env("DATABASE_PATH", "data/indexer.db")), { now: () => new Date() }, log);
-const server = createApp(indexer).listen(Number(env("PORT", "3002")), () => log.info("listening"));
+const server = createApp(indexer, { corsAllowedOrigin: env("CORS_ALLOWED_ORIGIN", "*") }).listen(Number(env("PORT", "3002")), () => log.info("listening"));
 
 const reader = new ContractChainReader(new SorobanSimulateCaller(env("STELLAR_RPC_URL", "https://soroban-testnet.stellar.org"), contractId, cfg.networkPassphrase));
 const reconcileEvery = Number(env("RECONCILE_EVERY_TICKS", "60"));

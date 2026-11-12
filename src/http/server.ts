@@ -79,24 +79,62 @@ export function toLedgerEvent(ix: Indexer, e: IndexedEvent) {
 
 const ser = (v: unknown): unknown => JSON.parse(JSON.stringify(v, (_k, x: unknown) => (typeof x === "bigint" ? x.toString() : x)));
 
-function send(res: ServerResponse, code: number, body: unknown, requestId: string): void {
-  res.writeHead(code, { "content-type": "application/json", "x-request-id": requestId, "cache-control": "no-store" });
+export interface HttpOptions {
+  corsAllowedOrigin?: string;
+}
+
+function resolveCorsOrigin(opts?: HttpOptions): string {
+  const configured = opts?.corsAllowedOrigin?.trim() || process.env["CORS_ALLOWED_ORIGIN"]?.trim();
+  const origin = configured || "*";
+  if (/[\r\n]/.test(origin)) {
+    throw new Error("CORS_ALLOWED_ORIGIN must not contain CR or LF characters");
+  }
+  return origin;
+}
+
+function corsHeaders(corsOrigin: string): Record<string, string> {
+  return {
+    "access-control-allow-origin": corsOrigin,
+    "access-control-expose-headers": "X-Request-Id",
+    ...(corsOrigin !== "*" ? { vary: "Origin" } : {}),
+  };
+}
+
+function send(res: ServerResponse, code: number, body: unknown, requestId: string, corsOrigin = "*"): void {
+  res.writeHead(code, {
+    "content-type": "application/json",
+    "x-request-id": requestId,
+    "cache-control": "no-store",
+    ...corsHeaders(corsOrigin),
+  });
   res.end(JSON.stringify(body));
 }
 
-function error(res: ServerResponse, code: number, errCode: string, message: string, requestId: string): void {
-  send(res, code, { error: { code: errCode, message, requestId } }, requestId);
+function error(res: ServerResponse, code: number, errCode: string, message: string, requestId: string, corsOrigin = "*"): void {
+  send(res, code, { error: { code: errCode, message, requestId } }, requestId, corsOrigin);
 }
 
-export function handle(ix: Indexer, req: IncomingMessage, res: ServerResponse): void {
+export function handle(ix: Indexer, req: IncomingMessage, res: ServerResponse, opts?: HttpOptions): void {
   const requestId = randomUUID();
-  if (req.method !== "GET") return error(res, 405, "METHOD_NOT_ALLOWED", "read-only API", requestId);
+  const corsOrigin = resolveCorsOrigin(opts);
+  if (req.method === "OPTIONS") {
+    res.writeHead(204, {
+      "x-request-id": requestId,
+      "cache-control": "no-store",
+      ...corsHeaders(corsOrigin),
+      "access-control-allow-methods": "GET, OPTIONS",
+      "access-control-allow-headers": "Content-Type, X-Request-Id",
+    });
+    res.end();
+    return;
+  }
+  if (req.method !== "GET") return error(res, 405, "METHOD_NOT_ALLOWED", "read-only API", requestId, corsOrigin);
   const url = new URL(req.url ?? "/", "http://localhost");
   const path = url.pathname;
   const m = ix.model;
 
-  if (path === "/healthz") return send(res, 200, { ok: true }, requestId);
-  if (path === "/v1/status") return send(res, 200, ser(ix.info), requestId);
+  if (path === "/healthz") return send(res, 200, { ok: true }, requestId, corsOrigin);
+  if (path === "/v1/status") return send(res, 200, ser(ix.info), requestId, corsOrigin);
   if (path === "/v1/contract") {
     // Governance as derived from events. `admin` is null until an admin event is seen (the
     // constructor emits none); the contract's get_governance is authoritative.
@@ -105,12 +143,12 @@ export function handle(ix: Indexer, req: IncomingMessage, res: ServerResponse): 
       contractId: ix.info.contractId, abiVersion: ABI_VERSION, admin: g.admin, pendingAdmin: g.pendingAdmin,
       pendingUpgrade: g.pendingUpgrade, upgradesLocked: g.upgradesLocked, upgrades: g.upgrades,
       indexerStatus: ix.status, latestObservedLedger: ix.info.latestObservedLedger,
-    }), requestId);
+    }), requestId, corsOrigin);
   }
 
   if (path === "/v1/ledger/events") {
     const q = query.safeParse(Object.fromEntries(url.searchParams));
-    if (!q.success) return error(res, 400, "INVALID_QUERY", q.error.issues.map((i) => i.message).join("; "), requestId);
+    if (!q.success) return error(res, 400, "INVALID_QUERY", q.error.issues.map((i) => i.message).join("; "), requestId, corsOrigin);
     const after = q.data.cursor;
     const page = ix.events.filter((e) => after === undefined || e.id > after).slice(0, q.data.limit);
     const body = {
@@ -120,7 +158,7 @@ export function handle(ix: Indexer, req: IncomingMessage, res: ServerResponse): 
       nextCursor: page.at(-1)?.id ?? after ?? null,
       indexerStatus: ix.status,
     };
-    return send(res, 200, body, requestId);
+    return send(res, 200, body, requestId, corsOrigin);
   }
 
   const id = /^\/v1\/(pools|rights|transfers)\/(\d{1,20})(\/rights)?$/.exec(path);
@@ -129,33 +167,33 @@ export function handle(ix: Indexer, req: IncomingMessage, res: ServerResponse): 
     const meta = { indexerStatus: ix.status, latestObservedLedger: ix.info.latestObservedLedger };
     if (kind === "pools" && !sub) {
       const p = m.pools.get(key);
-      if (!p) return error(res, 404, "NOT_FOUND", "pool not found", requestId);
+      if (!p) return error(res, 404, "NOT_FOUND", "pool not found", requestId, corsOrigin);
       const free = p.totals.funded - p.totals.claimed - p.totals.withdrawn - p.totals.reserved;
-      return send(res, 200, ser({ ...p, coverage: { unreserved: free, fullyBacked: free >= 0n }, ...meta }), requestId);
+      return send(res, 200, ser({ ...p, coverage: { unreserved: free, fullyBacked: free >= 0n }, ...meta }), requestId, corsOrigin);
     }
     if (kind === "pools" && sub) {
-      if (!m.pools.has(key)) return error(res, 404, "NOT_FOUND", "pool not found", requestId);
-      return send(res, 200, ser({ rights: [...m.rights.values()].filter((r) => r.poolId === key), ...meta }), requestId);
+      if (!m.pools.has(key)) return error(res, 404, "NOT_FOUND", "pool not found", requestId, corsOrigin);
+      return send(res, 200, ser({ rights: [...m.rights.values()].filter((r) => r.poolId === key), ...meta }), requestId, corsOrigin);
     }
     if (kind === "rights" && !sub) {
       const r = m.rights.get(key);
-      return r ? send(res, 200, ser({ ...r, ...meta }), requestId) : error(res, 404, "NOT_FOUND", "right not found", requestId);
+      return r ? send(res, 200, ser({ ...r, ...meta }), requestId, corsOrigin) : error(res, 404, "NOT_FOUND", "right not found", requestId, corsOrigin);
     }
     if (kind === "transfers" && !sub) {
       const t = m.transfers.get(key);
-      return t ? send(res, 200, ser({ ...t, ...meta }), requestId) : error(res, 404, "NOT_FOUND", "transfer not found", requestId);
+      return t ? send(res, 200, ser({ ...t, ...meta }), requestId, corsOrigin) : error(res, 404, "NOT_FOUND", "transfer not found", requestId, corsOrigin);
     }
   }
-  return error(res, 404, "NOT_FOUND", "no such route", requestId);
+  return error(res, 404, "NOT_FOUND", "no such route", requestId, corsOrigin);
 }
 
-export function createApp(ix: Indexer): Server {
+export function createApp(ix: Indexer, opts?: HttpOptions): Server {
+  if (opts?.corsAllowedOrigin !== undefined) resolveCorsOrigin(opts);
   return createServer((req, res) => {
     try {
-      handle(ix, req, res);
+      handle(ix, req, res, opts);
     } catch {
-      error(res, 500, "INTERNAL", "internal error", randomUUID());
+      error(res, 500, "INTERNAL", "internal error", randomUUID(), "*");
     }
   });
 }
-
